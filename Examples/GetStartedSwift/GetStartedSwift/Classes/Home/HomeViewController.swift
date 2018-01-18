@@ -78,8 +78,10 @@ class HomeViewController: UIViewController {
     
     @IBAction func convertButtonWasTouchedUpInside(_ sender: Any) {
         do {
-            let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
-            try editorViewController.editor.convert(nil, targetState: supportedTargetStates[0].value)
+            //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
+            let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
+            print(export.toJSON())
+            // try editorViewController.editor.convert(nil, targetState: supportedTargetStates[0].value)
         } catch {
             print("Error while converting : " + error.localizedDescription)
         }
@@ -94,4 +96,11 @@ class HomeViewController: UIViewController {
         editorViewController.inputMode = inputMode
     }
     
+}
+
+extension String {
+    func toJSON() -> Any? {
+        guard let data = self.data(using: .utf8, allowLossyConversion: false) else { return nil }
+        return try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
+    }
 }

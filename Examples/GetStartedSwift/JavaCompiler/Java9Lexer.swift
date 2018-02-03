@@ -156,21 +156,46 @@ open class Java9Lexer: Lexer {
 		default: return true
 		}
 	}
-	private func JavaLetter_sempred(_ _localctx: RuleContext!,  _ predIndex: Int) throws -> Bool {
-		switch (predIndex) {
-		    case 0:return Character.isJavaIdentifierStart(_input.LA(-1))
-		    case 1:return Character.isJavaIdentifierStart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))
-		    default: return true
-		}
-	}
-	private func JavaLetterOrDigit_sempred(_ _localctx: RuleContext!,  _ predIndex: Int) throws -> Bool {
-		switch (predIndex) {
-		    case 2:return Character.isJavaIdentifierPart(_input.LA(-1))
-		    case 3:return Character.isJavaIdentifierPart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))
-		    default: return true
-		}
-	}
-
+    private func JavaLetter_sempred(_ _localctx: RuleContext!,  _ predIndex: Int) throws -> Bool {
+        switch (predIndex) {
+        case 0:
+            if let charStream = _input {
+                let c = try charStream.LA(-1)
+                return Character.isJavaIdentifierStart(c)
+            }
+            // should not hit false
+            return false
+        case 1:
+            if let charStream = _input {
+                let c1 = try charStream.LA(-2)
+                let c2 = try charStream.LA(-1)
+                return Character.isJavaIdentifierStart(Character.toCodePoint(c1, c2))
+            }
+            // should not hit false
+            return false
+        default: return true
+        }
+    }
+    private func JavaLetterOrDigit_sempred(_ _localctx: RuleContext!,  _ predIndex: Int) throws -> Bool {
+        switch (predIndex) {
+        case 2:
+            if let charStream = _input {
+                let c = try charStream.LA(-1)
+                return Character.isJavaIdentifierPart(c)
+            }
+            // should not hit false
+            return false
+        case 3:
+            if let charStream = _input {
+                let c1 = try charStream.LA(-2)
+                let c2 = try charStream.LA(-1)
+                return Character.isJavaIdentifierPart(Character.toCodePoint(c1, c2))
+            }
+            // should not hit false
+            return false
+        default: return true
+        }
+    }
 
 	public
 	static let _serializedATN: String = Java9LexerATN().jsonString

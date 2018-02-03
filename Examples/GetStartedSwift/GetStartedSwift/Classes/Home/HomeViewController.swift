@@ -6,6 +6,8 @@ class HomeViewController: UIViewController {
     
     @IBOutlet weak var inputTypeSegmentedControl: UISegmentedControl!
 
+    @IBOutlet weak var outputConvertedCode: UILabel!
+    
     weak var editorViewController: EditorViewController!
     
     // MARK: - Life cycle
@@ -80,7 +82,23 @@ class HomeViewController: UIViewController {
         do {
             //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
             let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
-            print(export.toJSON())
+            let exportJSON = export.toJSON()
+            print(exportJSON)
+            if let jsonObj = exportJSON as? [String: Any] {
+                if let children = jsonObj["children"] as? [[String: Any]] {
+                    let label = "Label: \(children[0]["label"]!)"
+                    if let words = children[0]["words"] as? [[String: Any]] {
+                        var candidateWords = "";
+                        for w in words {
+                            if let candidates = w["candidates"] {
+                                let candidatesOnOneLine = (candidates as? [String])?.joined(separator: " ");
+                                candidateWords += "\(candidatesOnOneLine) ----- "
+                            }
+                        }
+                        outputConvertedCode.text = "\(label) Candidates: \(candidateWords)"
+                    }
+                }
+            }
             // try editorViewController.editor.convert(nil, targetState: supportedTargetStates[0].value)
         } catch {
             print("Error while converting : " + error.localizedDescription)
@@ -104,3 +122,4 @@ extension String {
         return try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
     }
 }
+

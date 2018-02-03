@@ -28,6 +28,8 @@
 		E0B7BF8D2025AB1C002E39A5 /* Java9Lexer.tokens in Resources */ = {isa = PBXBuildFile; fileRef = E0B7BF822025AB1C002E39A5 /* Java9Lexer.tokens */; };
 		E0B7BF912025AB5A002E39A5 /* Antlr4.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B7BF752025AAF0002E39A5 /* Antlr4.framework */; };
 		E0B7BF922025AB5A002E39A5 /* Antlr4.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E0B7BF752025AAF0002E39A5 /* Antlr4.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E0B7BF9820260407002E39A5 /* Java9BaseVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF9620260406002E39A5 /* Java9BaseVisitor.swift */; };
+		E0B7BF9920260407002E39A5 /* Java9Visitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF9720260407002E39A5 /* Java9Visitor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,6 +104,8 @@
 		E0B7BF802025AB1C002E39A5 /* Java9ParserATN.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9ParserATN.swift; sourceTree = "<group>"; };
 		E0B7BF812025AB1C002E39A5 /* Java9Lexer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9Lexer.swift; sourceTree = "<group>"; };
 		E0B7BF822025AB1C002E39A5 /* Java9Lexer.tokens */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9Lexer.tokens; sourceTree = "<group>"; };
+		E0B7BF9620260406002E39A5 /* Java9BaseVisitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9BaseVisitor.swift; sourceTree = "<group>"; };
+		E0B7BF9720260407002E39A5 /* Java9Visitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9Visitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -236,6 +240,8 @@
 				E0B7BF7C2025AB1C002E39A5 /* Java9Listener.swift */,
 				E0B7BF7A2025AB1B002E39A5 /* Java9Parser.swift */,
 				E0B7BF802025AB1C002E39A5 /* Java9ParserATN.swift */,
+				E0B7BF9620260406002E39A5 /* Java9BaseVisitor.swift */,
+				E0B7BF9720260407002E39A5 /* Java9Visitor.swift */,
 			);
 			path = JavaCompiler;
 			sourceTree = "<group>";
@@ -415,6 +421,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E0B7BF842025AB1C002E39A5 /* Java9BaseListener.swift in Sources */,
+				E0B7BF9820260407002E39A5 /* Java9BaseVisitor.swift in Sources */,
+				E0B7BF9920260407002E39A5 /* Java9Visitor.swift in Sources */,
 				E0B7BF832025AB1C002E39A5 /* Java9LexerATN.swift in Sources */,
 				E0B7BF8B2025AB1C002E39A5 /* Java9ParserATN.swift in Sources */,
 				E0B7BF8C2025AB1C002E39A5 /* Java9Lexer.swift in Sources */,

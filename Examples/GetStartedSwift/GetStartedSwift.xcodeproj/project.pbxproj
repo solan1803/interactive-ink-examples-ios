@@ -15,7 +15,35 @@
 		55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCF0E21F4746A80065868A /* AppDelegate.swift */; };
 		55BCF1021F4746A80065868A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55BCF0E81F4746A80065868A /* Assets.xcassets */; };
 		55BCF10E1F4746A80065868A /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = 55BCF0FD1F4746A80065868A /* MyCertificate.c */; };
+		E0B7BF832025AB1C002E39A5 /* Java9LexerATN.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF782025AB1B002E39A5 /* Java9LexerATN.swift */; };
+		E0B7BF842025AB1C002E39A5 /* Java9BaseListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF792025AB1B002E39A5 /* Java9BaseListener.swift */; };
+		E0B7BF852025AB1C002E39A5 /* Java9Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF7A2025AB1B002E39A5 /* Java9Parser.swift */; };
+		E0B7BF862025AB1C002E39A5 /* Java9Lexer.interp in Resources */ = {isa = PBXBuildFile; fileRef = E0B7BF7B2025AB1C002E39A5 /* Java9Lexer.interp */; };
+		E0B7BF872025AB1C002E39A5 /* Java9Listener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF7C2025AB1C002E39A5 /* Java9Listener.swift */; };
+		E0B7BF882025AB1C002E39A5 /* Java9.tokens in Resources */ = {isa = PBXBuildFile; fileRef = E0B7BF7D2025AB1C002E39A5 /* Java9.tokens */; };
+		E0B7BF892025AB1C002E39A5 /* Java9.g4 in Resources */ = {isa = PBXBuildFile; fileRef = E0B7BF7E2025AB1C002E39A5 /* Java9.g4 */; };
+		E0B7BF8A2025AB1C002E39A5 /* Java9.interp in Resources */ = {isa = PBXBuildFile; fileRef = E0B7BF7F2025AB1C002E39A5 /* Java9.interp */; };
+		E0B7BF8B2025AB1C002E39A5 /* Java9ParserATN.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF802025AB1C002E39A5 /* Java9ParserATN.swift */; };
+		E0B7BF8C2025AB1C002E39A5 /* Java9Lexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF812025AB1C002E39A5 /* Java9Lexer.swift */; };
+		E0B7BF8D2025AB1C002E39A5 /* Java9Lexer.tokens in Resources */ = {isa = PBXBuildFile; fileRef = E0B7BF822025AB1C002E39A5 /* Java9Lexer.tokens */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E0B7BF722025AAF0002E39A5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E0B7BF6B2025AAF0002E39A5 /* Antlr4.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = "Antlr4::Antlr4Tests::Product";
+			remoteInfo = Antlr4Tests;
+		};
+		E0B7BF742025AAF0002E39A5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E0B7BF6B2025AAF0002E39A5 /* Antlr4.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = "Antlr4::Antlr4::Product";
+			remoteInfo = Antlr4;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		167C03D40C50913424C09F30 /* Pods-GetStartedSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GetStartedSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-GetStartedSwift/Pods-GetStartedSwift.release.xcconfig"; sourceTree = "<group>"; };
@@ -32,6 +60,18 @@
 		55BCF1121F4747200065868A /* GetStartedSwift-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GetStartedSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		8E0E461AFE44F3378F2D361C /* libPods-GetStartedSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GetStartedSwift.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF462DE7D671DA0B1695C68E /* Pods-GetStartedSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GetStartedSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GetStartedSwift/Pods-GetStartedSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		E0B7BF6B2025AAF0002E39A5 /* Antlr4.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Antlr4.xcodeproj; path = ../../../antlr4/runtime/Swift/Antlr4.xcodeproj; sourceTree = "<group>"; };
+		E0B7BF782025AB1B002E39A5 /* Java9LexerATN.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9LexerATN.swift; sourceTree = "<group>"; };
+		E0B7BF792025AB1B002E39A5 /* Java9BaseListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9BaseListener.swift; sourceTree = "<group>"; };
+		E0B7BF7A2025AB1B002E39A5 /* Java9Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9Parser.swift; sourceTree = "<group>"; };
+		E0B7BF7B2025AB1C002E39A5 /* Java9Lexer.interp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9Lexer.interp; sourceTree = "<group>"; };
+		E0B7BF7C2025AB1C002E39A5 /* Java9Listener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9Listener.swift; sourceTree = "<group>"; };
+		E0B7BF7D2025AB1C002E39A5 /* Java9.tokens */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9.tokens; sourceTree = "<group>"; };
+		E0B7BF7E2025AB1C002E39A5 /* Java9.g4 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9.g4; sourceTree = "<group>"; };
+		E0B7BF7F2025AB1C002E39A5 /* Java9.interp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9.interp; sourceTree = "<group>"; };
+		E0B7BF802025AB1C002E39A5 /* Java9ParserATN.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9ParserATN.swift; sourceTree = "<group>"; };
+		E0B7BF812025AB1C002E39A5 /* Java9Lexer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9Lexer.swift; sourceTree = "<group>"; };
+		E0B7BF822025AB1C002E39A5 /* Java9Lexer.tokens */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9Lexer.tokens; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +98,8 @@
 		554A0B641F4745DF00C30FE6 = {
 			isa = PBXGroup;
 			children = (
+				E0B7BF772025AB08002E39A5 /* JavaCompiler */,
+				E0B7BF6B2025AAF0002E39A5 /* Antlr4.xcodeproj */,
 				554A0B6F1F4745DF00C30FE6 /* GetStartedSwift */,
 				554A0B6E1F4745DF00C30FE6 /* Products */,
 				540D384C58358E2672B2EDCA /* Pods */,
@@ -140,6 +182,33 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E0B7BF6C2025AAF0002E39A5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E0B7BF732025AAF0002E39A5 /* Antlr4Tests.xctest */,
+				E0B7BF752025AAF0002E39A5 /* Antlr4.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E0B7BF772025AB08002E39A5 /* JavaCompiler */ = {
+			isa = PBXGroup;
+			children = (
+				E0B7BF7E2025AB1C002E39A5 /* Java9.g4 */,
+				E0B7BF7F2025AB1C002E39A5 /* Java9.interp */,
+				E0B7BF7D2025AB1C002E39A5 /* Java9.tokens */,
+				E0B7BF792025AB1B002E39A5 /* Java9BaseListener.swift */,
+				E0B7BF7B2025AB1C002E39A5 /* Java9Lexer.interp */,
+				E0B7BF812025AB1C002E39A5 /* Java9Lexer.swift */,
+				E0B7BF822025AB1C002E39A5 /* Java9Lexer.tokens */,
+				E0B7BF782025AB1B002E39A5 /* Java9LexerATN.swift */,
+				E0B7BF7C2025AB1C002E39A5 /* Java9Listener.swift */,
+				E0B7BF7A2025AB1B002E39A5 /* Java9Parser.swift */,
+				E0B7BF802025AB1C002E39A5 /* Java9ParserATN.swift */,
+			);
+			path = JavaCompiler;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -193,12 +262,35 @@
 			mainGroup = 554A0B641F4745DF00C30FE6;
 			productRefGroup = 554A0B6E1F4745DF00C30FE6 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E0B7BF6C2025AAF0002E39A5 /* Products */;
+					ProjectRef = E0B7BF6B2025AAF0002E39A5 /* Antlr4.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				554A0B6C1F4745DF00C30FE6 /* GetStartedSwift */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E0B7BF732025AAF0002E39A5 /* Antlr4Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = Antlr4Tests.xctest;
+			remoteRef = E0B7BF722025AAF0002E39A5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E0B7BF752025AAF0002E39A5 /* Antlr4.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Antlr4.framework;
+			remoteRef = E0B7BF742025AAF0002E39A5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		554A0B6B1F4745DF00C30FE6 /* Resources */ = {
@@ -207,8 +299,13 @@
 			files = (
 				554547BB1F4B0367002C309C /* recognition-assets in Resources */,
 				554A0B7B1F4745DF00C30FE6 /* LaunchScreen.storyboard in Resources */,
+				E0B7BF892025AB1C002E39A5 /* Java9.g4 in Resources */,
 				55BCF1021F4746A80065868A /* Assets.xcassets in Resources */,
 				554A0B761F4745DF00C30FE6 /* Main.storyboard in Resources */,
+				E0B7BF8D2025AB1C002E39A5 /* Java9Lexer.tokens in Resources */,
+				E0B7BF862025AB1C002E39A5 /* Java9Lexer.interp in Resources */,
+				E0B7BF882025AB1C002E39A5 /* Java9.tokens in Resources */,
+				E0B7BF8A2025AB1C002E39A5 /* Java9.interp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,9 +380,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0B7BF842025AB1C002E39A5 /* Java9BaseListener.swift in Sources */,
+				E0B7BF832025AB1C002E39A5 /* Java9LexerATN.swift in Sources */,
+				E0B7BF8B2025AB1C002E39A5 /* Java9ParserATN.swift in Sources */,
+				E0B7BF8C2025AB1C002E39A5 /* Java9Lexer.swift in Sources */,
 				55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */,
 				55BCF10E1F4746A80065868A /* MyCertificate.c in Sources */,
+				E0B7BF852025AB1C002E39A5 /* Java9Parser.swift in Sources */,
 				554547B91F474987002C309C /* HomeViewController.swift in Sources */,
+				E0B7BF872025AB1C002E39A5 /* Java9Listener.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

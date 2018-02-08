@@ -109,21 +109,26 @@ class HomeViewController: UIViewController {
     
     func getParseTree(_ sourceCode: String) -> String {
         
-        let input = ANTLRInputStream(sourceCode);
+        let input = ANTLRInputStream(sourceCode)
         
         /* Create a lexer that feeds off of input CharStream */
-        let lexer = Java9Lexer(input);
+        let lexer = Java9Lexer(input)
         
         /* Create a buffer of tokens pulled from the lexer */
-        let tokens = CommonTokenStream(lexer);
+        let tokens = CommonTokenStream(lexer)
         
         /* Create a parser that feeds off the tokens buffer */
-        let parser = try? Java9Parser(tokens);
+        let parser = try? Java9Parser(tokens)
         
         /* Generate AST, begin parsing at the program rule */
-        let tree = try? parser?.classBodyDeclaration();
-        let treeStr = tree??.toStringTree()
-        return treeStr!
+        let tree = try? parser?.classBodyDeclaration()
+        let tw = Java9PrintTreeWalker()
+        print("----")
+        tw.visitClassMemberDeclaration(tree!!.classMemberDeclaration()!)
+        print("/////")
+        return ""
+//        let treeStr = tree??.toStringTree()
+//        return treeStr!
     }
 
     // MARK: - Segmented control actions

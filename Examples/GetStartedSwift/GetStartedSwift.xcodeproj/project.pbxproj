@@ -30,6 +30,7 @@
 		E0B7BF922025AB5A002E39A5 /* Antlr4.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E0B7BF752025AAF0002E39A5 /* Antlr4.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E0B7BF9820260407002E39A5 /* Java9BaseVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF9620260406002E39A5 /* Java9BaseVisitor.swift */; };
 		E0B7BF9920260407002E39A5 /* Java9Visitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF9720260407002E39A5 /* Java9Visitor.swift */; };
+		E0B7BF9B2026047A002E39A5 /* Java9PrintTreeWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B7BF9A2026047A002E39A5 /* Java9PrintTreeWalker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +107,7 @@
 		E0B7BF822025AB1C002E39A5 /* Java9Lexer.tokens */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9Lexer.tokens; sourceTree = "<group>"; };
 		E0B7BF9620260406002E39A5 /* Java9BaseVisitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9BaseVisitor.swift; sourceTree = "<group>"; };
 		E0B7BF9720260407002E39A5 /* Java9Visitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9Visitor.swift; sourceTree = "<group>"; };
+		E0B7BF9A2026047A002E39A5 /* Java9PrintTreeWalker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Java9PrintTreeWalker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,6 +243,7 @@
 				E0B7BF7A2025AB1B002E39A5 /* Java9Parser.swift */,
 				E0B7BF802025AB1C002E39A5 /* Java9ParserATN.swift */,
 				E0B7BF9620260406002E39A5 /* Java9BaseVisitor.swift */,
+				E0B7BF9A2026047A002E39A5 /* Java9PrintTreeWalker.swift */,
 				E0B7BF9720260407002E39A5 /* Java9Visitor.swift */,
 			);
 			path = JavaCompiler;
@@ -431,6 +434,7 @@
 				E0B7BF852025AB1C002E39A5 /* Java9Parser.swift in Sources */,
 				554547B91F474987002C309C /* HomeViewController.swift in Sources */,
 				E0B7BF872025AB1C002E39A5 /* Java9Listener.swift in Sources */,
+				E0B7BF9B2026047A002E39A5 /* Java9PrintTreeWalker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

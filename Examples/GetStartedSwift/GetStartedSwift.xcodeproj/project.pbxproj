@@ -14,7 +14,6 @@
 		554A0B7B1F4745DF00C30FE6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 554A0B791F4745DF00C30FE6 /* LaunchScreen.storyboard */; };
 		55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCF0E21F4746A80065868A /* AppDelegate.swift */; };
 		55BCF1021F4746A80065868A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55BCF0E81F4746A80065868A /* Assets.xcassets */; };
-		55BCF10E1F4746A80065868A /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = 55BCF0FD1F4746A80065868A /* MyCertificate.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +26,6 @@
 		55BCF0E21F4746A80065868A /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		55BCF0E81F4746A80065868A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		55BCF0FA1F4746A80065868A /* GetStartedSwift-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GetStartedSwift-Info.plist"; sourceTree = "<group>"; };
-		55BCF0FD1F4746A80065868A /* MyCertificate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MyCertificate.c; sourceTree = "<group>"; };
 		55BCF0FE1F4746A80065868A /* MyCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyCertificate.h; sourceTree = "<group>"; };
 		55BCF1121F4747200065868A /* GetStartedSwift-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GetStartedSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		8E0E461AFE44F3378F2D361C /* libPods-GetStartedSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GetStartedSwift.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -127,7 +125,6 @@
 			isa = PBXGroup;
 			children = (
 				55BCF0FE1F4746A80065868A /* MyCertificate.h */,
-				55BCF0FD1F4746A80065868A /* MyCertificate.c */,
 			);
 			path = MyScriptCertificate;
 			sourceTree = "<group>";
@@ -284,7 +281,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */,
-				55BCF10E1F4746A80065868A /* MyCertificate.c in Sources */,
 				554547B91F474987002C309C /* HomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

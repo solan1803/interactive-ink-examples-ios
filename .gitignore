@@ -31,3 +31,6 @@ Carthage
 # `pod install` in .travis.yml
 #
 # Pods/
+
+# Do not commit new certificate in project
+Examples/GetStartedSwift/GetStartedSwift/MyScriptCertificate/MyCertificate.c

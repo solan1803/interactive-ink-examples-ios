@@ -14,6 +14,7 @@
 		554A0B7B1F4745DF00C30FE6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 554A0B791F4745DF00C30FE6 /* LaunchScreen.storyboard */; };
 		55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCF0E21F4746A80065868A /* AppDelegate.swift */; };
 		55BCF1021F4746A80065868A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55BCF0E81F4746A80065868A /* Assets.xcassets */; };
+		E058FABC202D12FA00C136DC /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = E058FABB202D12FA00C136DC /* MyCertificate.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		55BCF1121F4747200065868A /* GetStartedSwift-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GetStartedSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		8E0E461AFE44F3378F2D361C /* libPods-GetStartedSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GetStartedSwift.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF462DE7D671DA0B1695C68E /* Pods-GetStartedSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GetStartedSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GetStartedSwift/Pods-GetStartedSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		E058FABB202D12FA00C136DC /* MyCertificate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MyCertificate.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				55BCF0FE1F4746A80065868A /* MyCertificate.h */,
+				E058FABB202D12FA00C136DC /* MyCertificate.c */,
 			);
 			path = MyScriptCertificate;
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 			files = (
 				55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */,
 				554547B91F474987002C309C /* HomeViewController.swift in Sources */,
+				E058FABC202D12FA00C136DC /* MyCertificate.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

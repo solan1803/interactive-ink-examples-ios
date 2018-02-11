@@ -14,8 +14,33 @@
 		554A0B7B1F4745DF00C30FE6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 554A0B791F4745DF00C30FE6 /* LaunchScreen.storyboard */; };
 		55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCF0E21F4746A80065868A /* AppDelegate.swift */; };
 		55BCF1021F4746A80065868A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55BCF0E81F4746A80065868A /* Assets.xcassets */; };
+		E084DF2E2030537D00C32ECC /* Antlr4.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E084DF2B203052F300C32ECC /* Antlr4.framework */; };
 		E09AFD7B202E539B0050E168 /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = E09AFD7A202E539B0050E168 /* MyCertificate.c */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E084DF28203052F300C32ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E084DF21203052F200C32ECC /* Antlr4.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = "Antlr4::Antlr4Tests::Product";
+			remoteInfo = Antlr4Tests;
+		};
+		E084DF2A203052F300C32ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E084DF21203052F200C32ECC /* Antlr4.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = "Antlr4::Antlr4::Product";
+			remoteInfo = Antlr4;
+		};
+		E084DF2C2030537200C32ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E084DF21203052F200C32ECC /* Antlr4.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = "Antlr4::Antlr4";
+			remoteInfo = Antlr4;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		167C03D40C50913424C09F30 /* Pods-GetStartedSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GetStartedSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-GetStartedSwift/Pods-GetStartedSwift.release.xcconfig"; sourceTree = "<group>"; };
@@ -31,6 +56,7 @@
 		55BCF1121F4747200065868A /* GetStartedSwift-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GetStartedSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		8E0E461AFE44F3378F2D361C /* libPods-GetStartedSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GetStartedSwift.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF462DE7D671DA0B1695C68E /* Pods-GetStartedSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GetStartedSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GetStartedSwift/Pods-GetStartedSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		E084DF21203052F200C32ECC /* Antlr4.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Antlr4.xcodeproj; path = ../../../antlr4/runtime/Swift/Antlr4.xcodeproj; sourceTree = "<group>"; };
 		E09AFD7A202E539B0050E168 /* MyCertificate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MyCertificate.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -39,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E084DF2E2030537D00C32ECC /* Antlr4.framework in Frameworks */,
 				1BD102E9B691C4E127E399F4 /* libPods-GetStartedSwift.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -58,6 +85,7 @@
 		554A0B641F4745DF00C30FE6 = {
 			isa = PBXGroup;
 			children = (
+				E084DF21203052F200C32ECC /* Antlr4.xcodeproj */,
 				554A0B6F1F4745DF00C30FE6 /* GetStartedSwift */,
 				554A0B6E1F4745DF00C30FE6 /* Products */,
 				540D384C58358E2672B2EDCA /* Pods */,
@@ -140,6 +168,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E084DF22203052F200C32ECC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E084DF29203052F300C32ECC /* Antlr4Tests.xctest */,
+				E084DF2B203052F300C32ECC /* Antlr4.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -158,6 +195,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				E084DF2D2030537200C32ECC /* PBXTargetDependency */,
 			);
 			name = GetStartedSwift;
 			productName = GetStartedSwift;
@@ -193,12 +231,35 @@
 			mainGroup = 554A0B641F4745DF00C30FE6;
 			productRefGroup = 554A0B6E1F4745DF00C30FE6 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E084DF22203052F200C32ECC /* Products */;
+					ProjectRef = E084DF21203052F200C32ECC /* Antlr4.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				554A0B6C1F4745DF00C30FE6 /* GetStartedSwift */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E084DF29203052F300C32ECC /* Antlr4Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = Antlr4Tests.xctest;
+			remoteRef = E084DF28203052F300C32ECC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E084DF2B203052F300C32ECC /* Antlr4.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Antlr4.framework;
+			remoteRef = E084DF2A203052F300C32ECC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		554A0B6B1F4745DF00C30FE6 /* Resources */ = {
@@ -290,6 +351,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E084DF2D2030537200C32ECC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Antlr4;
+			targetProxy = E084DF2C2030537200C32ECC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		554A0B741F4745DF00C30FE6 /* Main.storyboard */ = {

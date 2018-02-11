@@ -1,6 +1,7 @@
 // Copyright MyScript. All right reserved.
 
 import UIKit
+import Antlr4
 
 class HomeViewController: UIViewController {
     
@@ -86,7 +87,7 @@ class HomeViewController: UIViewController {
             print(exportJSON)
             if let jsonObj = exportJSON as? [String: Any] {
                 if let children = jsonObj["children"] as? [[String: Any]] {
-                    let label = "Label: \(children[0]["label"]!)"
+                    let label = "\(children[0]["label"]!)"
                     if let words = children[0]["words"] as? [[String: Any]] {
                         var candidateWords = "";
                         for w in words {
@@ -95,7 +96,8 @@ class HomeViewController: UIViewController {
                                 candidateWords += "\(candidatesOnOneLine) ----- "
                             }
                         }
-                        outputConvertedCode.text = "\(label) Candidates: \(candidateWords)"
+                        let parseTree = getParseTree(label)
+                        outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords) \n Parse Tree: \(parseTree)"
                     }
                 }
             }
@@ -105,6 +107,24 @@ class HomeViewController: UIViewController {
         }
     }
 
+    func getParseTree(_ sourceCode: String) -> String {
+        let input = ANTLRInputStream(sourceCode);
+        
+        /* Create a lexer that feeds off of input CharStream */
+        let lexer = Java9Lexer(input);
+        
+        /* Create a buffer of tokens pulled from the lexer */
+        let tokens = CommonTokenStream(lexer);
+        
+        /* Create a parser that feeds off the tokens buffer */
+        let parser = try? Java9Parser(tokens);
+        
+        /* Generate AST, begin parsing at the program rule */
+        let tree = try? parser?.classBodyDeclaration();
+        let treeStr = tree??.toStringTree()
+        return treeStr!
+    }
+    
     // MARK: - Segmented control actions
     
     @IBAction func inputTypeSegmentedControlValueChanged(_ sender: UISegmentedControl) {

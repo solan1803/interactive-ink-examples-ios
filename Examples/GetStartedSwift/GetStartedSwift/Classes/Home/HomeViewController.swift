@@ -98,6 +98,7 @@ class HomeViewController: UIViewController {
                         }
                         let parseTree = getParseTree(label)
                         outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords) \n Parse Tree: \(parseTree)"
+                        //outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords)"
                     }
                 }
             }

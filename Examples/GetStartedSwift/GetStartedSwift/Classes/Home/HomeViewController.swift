@@ -10,6 +10,7 @@ class HomeViewController: UIViewController {
     
     weak var editorViewController: EditorViewController!
     
+    private var contentPackage: IINKContentPackage? = nil
     // MARK: - Life cycle
     
     override func viewDidLoad() {
@@ -40,6 +41,7 @@ class HomeViewController: UIViewController {
 
         do {
             if let package = try createPackage(packageName: "New") {
+                contentPackage = package
                 try editorViewController.editor.part = package.getPartAt(0)
             }
         } catch {
@@ -114,6 +116,13 @@ class HomeViewController: UIViewController {
         editorViewController.inputMode = inputMode
     }
     
+    @IBAction func saveContent(_ sender: UIButton) {
+        do {
+            try contentPackage?.save()
+        } catch {
+            print("Error trying to save")
+        }
+    }
 }
 
 extension String {

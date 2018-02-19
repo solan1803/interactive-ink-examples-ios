@@ -7,6 +7,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -104,14 +105,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QN2-cG-Pu3">
-                                <rect key="frame" x="350" y="548" width="34" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Save"/>
-                                <connections>
-                                    <action selector="saveContent:" destination="BYZ-38-t0r" eventType="touchUpInside" id="kcn-Yr-AHK"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -130,6 +123,18 @@
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="File - Type" id="LEh-IN-G02">
+                        <leftBarButtonItems>
+                            <barButtonItem title="Load" id="77p-m0-euH">
+                                <connections>
+                                    <segue destination="r4e-Yo-df1" kind="show" id="jPW-Jl-3FR"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="save" id="mgw-9J-7E7">
+                                <connections>
+                                    <action selector="saveContent:" destination="BYZ-38-t0r" id="NhZ-qP-byY"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
                         <barButtonItem key="rightBarButtonItem" title="Convert" id="dbl-Jz-DDd">
                             <connections>
                                 <action selector="convertButtonWasTouchedUpInside:" destination="BYZ-38-t0r" id="3S6-EP-zxN"/>
@@ -138,12 +143,57 @@
                     </navigationItem>
                     <connections>
                         <outlet property="inputTypeSegmentedControl" destination="woc-B8-dRe" id="z0z-gc-dJT"/>
+                        <outlet property="loadBarButtonItem" destination="77p-m0-euH" id="63j-TF-XsQ"/>
                         <outlet property="outputConvertedCode" destination="hOf-Y2-2hk" id="hjT-wq-gwX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-78.260869565217391" y="140.21739130434784"/>
+        </scene>
+        <!--Title-->
+        <scene sceneID="LcM-Mx-5dz">
+            <objects>
+                <tableViewController id="r4e-Yo-df1" customClass="LoadFilesTableViewController" customModule="GetStartedSwift" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="Upn-wQ-Dxu">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="DocumentCell" textLabel="pv4-HP-riw" style="IBUITableViewCellStyleDefault" id="VaB-v7-AkN">
+                                <rect key="frame" x="0.0" y="28" width="414" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="VaB-v7-AkN" id="wQ4-SF-uJS">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="pv4-HP-riw">
+                                            <rect key="frame" x="20" y="0.0" width="374" height="43.666666666666664"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="r4e-Yo-df1" id="NQn-cg-b9f"/>
+                            <outlet property="delegate" destination="r4e-Yo-df1" id="6me-WD-j30"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Title" id="0de-av-vNO">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="cTJ-qb-WHM">
+                            <connections>
+                                <action selector="createNewFile:" destination="r4e-Yo-df1" id="pqd-QF-msV"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Sfh-WF-ufO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="735" y="-486"/>
         </scene>
         <!--Editor View Controller-->
         <scene sceneID="zDz-e9-keq">

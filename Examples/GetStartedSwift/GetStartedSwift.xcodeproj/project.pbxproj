@@ -15,6 +15,7 @@
 		55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCF0E21F4746A80065868A /* AppDelegate.swift */; };
 		55BCF1021F4746A80065868A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55BCF0E81F4746A80065868A /* Assets.xcassets */; };
 		E09AFD7B202E539B0050E168 /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = E09AFD7A202E539B0050E168 /* MyCertificate.c */; };
+		E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		8E0E461AFE44F3378F2D361C /* libPods-GetStartedSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GetStartedSwift.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF462DE7D671DA0B1695C68E /* Pods-GetStartedSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GetStartedSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GetStartedSwift/Pods-GetStartedSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		E09AFD7A202E539B0050E168 /* MyCertificate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MyCertificate.c; sourceTree = "<group>"; };
+		E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFilesTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				554547B81F474987002C309C /* HomeViewController.swift */,
+				E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -286,6 +289,7 @@
 				55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */,
 				554547B91F474987002C309C /* HomeViewController.swift in Sources */,
 				E09AFD7B202E539B0050E168 /* MyCertificate.c in Sources */,
+				E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

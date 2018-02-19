@@ -11,7 +11,14 @@ class HomeViewController: UIViewController {
     
     weak var editorViewController: EditorViewController!
     
-    // MARK: - Life cycle
+    private var contentPackage: IINKContentPackage? = nil
+    
+    @IBOutlet weak var loadBarButtonItem: UIBarButtonItem!
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        loadBarButtonItem.isEnabled = false
+        loadBarButtonItem.isEnabled = true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +48,7 @@ class HomeViewController: UIViewController {
 
         do {
             if let package = try createPackage(packageName: "New") {
+                contentPackage = package
                 try editorViewController.editor.part = package.getPartAt(0)
             }
         } catch {
@@ -55,11 +63,15 @@ class HomeViewController: UIViewController {
         var resultPackage: IINKContentPackage?
         let fullPath = FileManager.default.pathForFile(inDocumentDirectory: packageName) + ".iink"
         if let engine = (UIApplication.shared.delegate as? AppDelegate)?.engine {
-            resultPackage = try engine.createPackage(fullPath.decomposedStringWithCanonicalMapping)
-            
-            // Add a blank page type Text Document
-            if let part = try resultPackage?.createPart("Text Document") /* Options are : "Diagram", "Drawing", "Math", "Text Document", "Text" */ {
-                self.title = "Type: " + part.type
+            if !FileManager.default.fileExists(atPath: fullPath) {
+                resultPackage = try engine.createPackage(fullPath.decomposedStringWithCanonicalMapping)
+                
+                // Add a blank page type Text Document
+                if let part = try resultPackage?.createPart("Text Document") /* Options are : "Diagram", "Drawing", "Math", "Text Document", "Text" */ {
+                    self.title = "Type: " + part.type
+                }
+            } else {
+                resultPackage = try engine.openPackage(fullPath)
             }
         }
         return resultPackage
@@ -133,6 +145,41 @@ class HomeViewController: UIViewController {
             return
         }
         editorViewController.inputMode = inputMode
+    }
+    
+    @IBAction func saveContent(_ sender: UIBarButtonItem) {
+        do {
+            try contentPackage?.save()
+        } catch {
+            print("Error trying to save")
+        }
+    }
+    
+    public func loadContent(withFileURL fileURL: String) {
+        if let engine = (UIApplication.shared.delegate as? AppDelegate)?.engine {
+            if FileManager.default.fileExists(atPath: fileURL) {
+                do {
+                    let package = try engine.openPackage(fileURL)
+                    contentPackage = package
+                    //editorViewController.editor.clear()
+                    try editorViewController.editor.part = package.getPartAt(0)
+                } catch {
+                    print("ERROR: loadContent")
+                }
+            }
+        }
+    }
+    
+    private func printFilesInDocumentsDirectory() {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        do {
+            let fileURLs = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
+            print(fileURLs)
+            // process files
+        } catch {
+            print("Error while enumerating files: \(error.localizedDescription)")
+        }
     }
     
 }

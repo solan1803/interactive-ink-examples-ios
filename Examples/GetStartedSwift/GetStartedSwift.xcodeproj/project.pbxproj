@@ -30,6 +30,8 @@
 		E084DF492030541500C32ECC /* Java9.tokens in Resources */ = {isa = PBXBuildFile; fileRef = E084DF3C2030541500C32ECC /* Java9.tokens */; };
 		E084DF50203058BB00C32ECC /* Antlr4.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E084DF2B203052F300C32ECC /* Antlr4.framework */; };
 		E084DF51203058BB00C32ECC /* Antlr4.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E084DF2B203052F300C32ECC /* Antlr4.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E0931B80203B462600B84863 /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = E0931B7C203B462600B84863 /* MyCertificate.c */; };
+		E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,6 +107,8 @@
 		E084DF3A2030541500C32ECC /* Java9Listener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9Listener.swift; sourceTree = "<group>"; };
 		E084DF3B2030541500C32ECC /* Java9Lexer.tokens */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9Lexer.tokens; sourceTree = "<group>"; };
 		E084DF3C2030541500C32ECC /* Java9.tokens */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9.tokens; sourceTree = "<group>"; };
+		E0931B7C203B462600B84863 /* MyCertificate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MyCertificate.c; sourceTree = "<group>"; };
+		E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFilesTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +143,7 @@
 				554A0B6E1F4745DF00C30FE6 /* Products */,
 				540D384C58358E2672B2EDCA /* Pods */,
 				82E49F805BFAE545CA8D0136 /* Frameworks */,
+				E0931B77203B447C00B84863 /* Recovered References */,
 			);
 			indentWidth = 4;
 			sourceTree = "<group>";
@@ -204,6 +209,7 @@
 		55BCF0FC1F4746A80065868A /* MyScriptCertificate */ = {
 			isa = PBXGroup;
 			children = (
+				E0931B7C203B462600B84863 /* MyCertificate.c */,
 				55BCF0FE1F4746A80065868A /* MyCertificate.h */,
 			);
 			path = MyScriptCertificate;
@@ -244,6 +250,14 @@
 				E084DF3C2030541500C32ECC /* Java9.tokens */,
 			);
 			path = "Java Compiler";
+			sourceTree = "<group>";
+		};
+		E0931B77203B447C00B84863 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				E09AFD7A202E539B0050E168 /* MyCertificate.c */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -425,11 +439,13 @@
 				55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */,
 				554547B91F474987002C309C /* HomeViewController.swift in Sources */,
 				E084DF3E2030541500C32ECC /* Java9Parser.swift in Sources */,
+				E0931B80203B462600B84863 /* MyCertificate.c in Sources */,
 				E084DF3F2030541500C32ECC /* Java9LexerATN.swift in Sources */,
 				E084DF462030541500C32ECC /* Java9Lexer.swift in Sources */,
 				E084DF472030541500C32ECC /* Java9Listener.swift in Sources */,
 				E084DF432030541500C32ECC /* Java9BaseListener.swift in Sources */,
 				E084DF402030541500C32ECC /* Java9ParserATN.swift in Sources */,
+				E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

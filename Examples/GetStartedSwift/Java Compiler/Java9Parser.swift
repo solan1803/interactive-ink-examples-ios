@@ -2,6 +2,17 @@
 import Antlr4
 
 open class Java9Parser: Parser {
+    
+    open override func canFixAndMoveOn(_ ttype: Int) -> Bool {
+        switch (ttype) {
+        case Java9Parser.Tokens.LPAREN.rawValue:
+            let lParenToken = CommonTokenFactory().create(Java9Parser.Tokens.LPAREN.rawValue, "(")
+            let intToken = CommonTokenFactory().create(Java9Parser.Tokens.INT.rawValue, "int")
+            _input.replaceToken(atIndex: 2, withTokens: [lParenToken, intToken])
+            return true
+        default: return false
+        }
+    }
 
 	internal static var _decisionToDFA: [DFA] = {
           var decisionToDFA = [DFA]()
@@ -7283,6 +7294,11 @@ open class Java9Parser: Parser {
 		 	setState(1145)
 		 	try match(Java9Parser.Tokens.Identifier.rawValue)
 		 	setState(1146)
+            /* Attempt to fix (int being recognised as Cink */
+//            let lParenToken = CommonTokenFactory().create(Java9Parser.Tokens.LPAREN.rawValue, "(")
+//            let intToken = CommonTokenFactory().create(Java9Parser.Tokens.INT.rawValue, "int")
+//            _input.replaceToken(atIndex: 2, withTokens: [lParenToken, intToken])
+            /* end fix */
 		 	try match(Java9Parser.Tokens.LPAREN.rawValue)
 		 	setState(1148)
 		 	try _errHandler.sync(self)
@@ -23629,4 +23645,5 @@ open class Java9Parser: Parser {
 
 	public
 	static let _ATN = ATNDeserializer().deserializeFromJson(_serializedATN)
+    
 }

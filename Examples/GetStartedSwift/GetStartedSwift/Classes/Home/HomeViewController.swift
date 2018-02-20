@@ -96,7 +96,7 @@ class HomeViewController: UIViewController {
             //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
             let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
             let exportJSON = export.toJSON()
-            print(exportJSON)
+            //print(exportJSON)
             if let jsonObj = exportJSON as? [String: Any] {
                 if let children = jsonObj["children"] as? [[String: Any]] {
                     let label = "\(children[0]["label"]!)"
@@ -109,7 +109,7 @@ class HomeViewController: UIViewController {
                             }
                         }
                         let parseTree = getParseTree(label)
-                        outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords) \n Parse Tree: \(parseTree)"
+                        outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords) \n Parse Tree: \n \(parseTree)"
                         //outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords)"
                     }
                 }
@@ -122,7 +122,7 @@ class HomeViewController: UIViewController {
 
     func getParseTree(_ sourceCode: String) -> String {
         let input = ANTLRInputStream(sourceCode);
-        
+        var printStr = "";
         /* Create a lexer that feeds off of input CharStream */
         let lexer = Java9Lexer(input);
         
@@ -130,12 +130,15 @@ class HomeViewController: UIViewController {
         let tokens = CommonTokenStream(lexer);
         
         /* Create a parser that feeds off the tokens buffer */
-        let parser = try? Java9Parser(tokens);
-        
-        /* Generate AST, begin parsing at the program rule */
-        let tree = try? parser?.classBodyDeclaration();
-        let treeStr = tree??.toStringTree()
-        return treeStr!
+        if let parser = try? Java9Parser(tokens) {
+            /* Generate AST, begin parsing at the program rule */
+            if let tree = try? parser.classBodyDeclaration() {
+                printStr = Java9PrintRulesWalker(parser).visit(tree) ?? ""
+                print("\(printStr)")
+                //treeString = tree.toStringTree()
+            }
+        }
+        return printStr
     }
     
     // MARK: - Segmented control actions

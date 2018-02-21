@@ -11,6 +11,15 @@ class HomeViewController: UIViewController {
     
     private var contentPackage: IINKContentPackage? = nil
     
+    private var documentTitleText: String = "" {
+        didSet {
+            documentTitleButton.setTitle(documentTitleText, for: UIControlState.normal)
+            self.title = documentTitleText
+        }
+    }
+    
+    private let documentTitleButton:UIButton = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 44))
+    
     @IBOutlet weak var loadBarButtonItem: UIBarButtonItem!
     @IBOutlet weak var convertBarButtonItem: UIBarButtonItem!
     
@@ -19,6 +28,51 @@ class HomeViewController: UIViewController {
         loadBarButtonItem.isEnabled = true
         convertBarButtonItem.isEnabled = false
         convertBarButtonItem.isEnabled = true
+    }
+    
+    @objc func renameTitle() {
+        //Creating UIAlertController and
+        //Setting title and message for the alert dialog
+        let alertController = UIAlertController(title: "Rename file", message: "Change name to: ", preferredStyle: .alert)
+        
+        //the confirm action taking the inputs
+        let confirmAction = UIAlertAction(title: "Enter", style: .default) { (_) in
+            
+            //getting the input values from user
+            if let filename = alertController.textFields?[0].text {
+                // check if file already exists with that title
+                do {
+                    let fullPath = FileManager.default.pathForFile(inDocumentDirectory: filename) + ".iink"
+                    if !FileManager.default.fileExists(atPath: fullPath) {
+                        let oldPath = URL(fileURLWithPath: FileManager.default.pathForFile(inDocumentDirectory: self.documentTitleText) + ".iink")
+                        let newPath = URL(fileURLWithPath: fullPath)
+                        try FileManager.default.moveItem(at: oldPath, to: newPath)
+                        
+                        if FileManager.default.fileExists(atPath: fullPath) {
+                            self.loadContent(withFileURL: String(fullPath))
+                        }
+                    }
+                } catch {
+                    print("ERROR with renaming file")
+                    print(error)
+                }
+            }
+            
+        }
+        
+        //the cancel action doing nothing
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
+        
+        //adding textfields to our dialog box
+        alertController.addTextField { (textField) in
+        }
+        
+        //adding the action to dialogbox
+        alertController.addAction(confirmAction)
+        alertController.addAction(cancelAction)
+        
+        //finally presenting the dialog box
+        self.present(alertController, animated: true, completion: nil)
     }
     
     override func viewDidLoad() {
@@ -55,6 +109,10 @@ class HomeViewController: UIViewController {
         } catch {
             print("Error while creating package : " + error.localizedDescription)
         }
+        
+        documentTitleButton.setTitleColor(UIColor.black, for: UIControlState.normal)
+        documentTitleButton.addTarget(self, action: #selector(self.renameTitle), for: UIControlEvents.touchUpInside)
+        self.navigationItem.titleView = documentTitleButton;
     }
     
     // MARK: - Create package
@@ -69,7 +127,7 @@ class HomeViewController: UIViewController {
                 
                 // Add a blank page type Text Document
                 if let part = try resultPackage?.createPart("Text Document") /* Options are : "Diagram", "Drawing", "Math", "Text Document", "Text" */ {
-                    self.title = "Type: " + part.type
+                    documentTitleText = packageName
                 }
             } else {
                 resultPackage = try engine.openPackage(fullPath)
@@ -180,6 +238,7 @@ class HomeViewController: UIViewController {
                 do {
                     let package = try engine.openPackage(fileURL)
                     contentPackage = package
+                    documentTitleText = String(fileURL[fileURL.index(fileURL.startIndex, offsetBy: 87)...fileURL.index(fileURL.endIndex, offsetBy: -6)])
                     //editorViewController.editor.clear()
                     try editorViewController.editor.part = package.getPartAt(0)
                 } catch {

@@ -26,6 +26,7 @@ class LoadFilesTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         getListOfFiles()
+        self.title = "Load document"
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -53,7 +54,9 @@ class LoadFilesTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DocumentCell", for: indexPath)
-        cell.textLabel?.text = String(describing: fileURLs[indexPath.row])
+        // cell.textLabel?.text = String(describing: fileURLs[indexPath.row])
+        let fileURL = String(describing: fileURLs[indexPath.row])
+        cell.textLabel?.text = String(fileURL[fileURL.index(fileURL.startIndex, offsetBy: 102)...fileURL.index(fileURL.endIndex, offsetBy: -6)])
         return cell
     }
     

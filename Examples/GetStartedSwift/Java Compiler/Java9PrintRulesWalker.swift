@@ -136,7 +136,7 @@ class Java9PrintRulesWalker: Java9BaseVisitor<String> {
             
             var tabs = ""
             for _ in 0..<visitChildrenCount {
-                tabs += "\t"
+                tabs += "    "
             }
             
             let c = node[i]

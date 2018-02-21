@@ -6,18 +6,19 @@ import Antlr4
 class HomeViewController: UIViewController {
     
     @IBOutlet weak var inputTypeSegmentedControl: UISegmentedControl!
-
-    @IBOutlet weak var outputConvertedCode: UILabel!
     
     weak var editorViewController: EditorViewController!
     
     private var contentPackage: IINKContentPackage? = nil
     
     @IBOutlet weak var loadBarButtonItem: UIBarButtonItem!
+    @IBOutlet weak var convertBarButtonItem: UIBarButtonItem!
     
     override func viewWillDisappear(_ animated: Bool) {
         loadBarButtonItem.isEnabled = false
         loadBarButtonItem.isEnabled = true
+        convertBarButtonItem.isEnabled = false
+        convertBarButtonItem.isEnabled = true
     }
     
     override func viewDidLoad() {
@@ -91,7 +92,7 @@ class HomeViewController: UIViewController {
         editorViewController.editor.redo()
     }
     
-    @IBAction func convertButtonWasTouchedUpInside(_ sender: Any) {
+     func convertButtonWasTouchedUpInside() -> String {
         do {
             //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
             let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
@@ -108,8 +109,8 @@ class HomeViewController: UIViewController {
                                 candidateWords += "\(candidatesOnOneLine) ----- "
                             }
                         }
-                        let parseTree = getParseTree(label)
-                        outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords) \n Parse Tree: \n \(parseTree)"
+                        let result = getParseTree(label)
+                        return "MyScript Recognition: \n \(label) \n Candidates: \n \(candidateWords) \n \(result)"
                         //outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords)"
                     }
                 }
@@ -118,11 +119,25 @@ class HomeViewController: UIViewController {
         } catch {
             print("Error while converting : " + error.localizedDescription)
         }
+        return ""
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let identifier = segue.identifier {
+            switch identifier {
+            case "showConversion":
+                let output = convertButtonWasTouchedUpInside()
+                if let covc = segue.destination as? ConvertedOutputViewController {
+                    covc.convertedText = output
+                }
+            default: break
+            }
+        }
     }
 
     func getParseTree(_ sourceCode: String) -> String {
         let input = ANTLRInputStream(sourceCode);
-        var printStr = "";
+        var result = "";
         /* Create a lexer that feeds off of input CharStream */
         let lexer = Java9Lexer(input);
         
@@ -133,12 +148,13 @@ class HomeViewController: UIViewController {
         if let parser = try? Java9Parser(tokens) {
             /* Generate AST, begin parsing at the program rule */
             if let tree = try? parser.classBodyDeclaration() {
-                printStr = Java9PrintRulesWalker(parser).visit(tree) ?? ""
+                let printStr = Java9PrintRulesWalker(parser).visit(tree) ?? ""
                 print("\(printStr)")
-                //treeString = tree.toStringTree()
+                let treeString = tree.getText()
+                result = "Parse Tree: \n \(printStr) \n Final Output: \n \(treeString)"
             }
         }
-        return printStr
+        return result
     }
     
     // MARK: - Segmented control actions

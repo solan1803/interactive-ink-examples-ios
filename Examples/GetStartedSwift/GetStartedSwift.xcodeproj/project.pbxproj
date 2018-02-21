@@ -32,6 +32,7 @@
 		E084DF51203058BB00C32ECC /* Antlr4.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E084DF2B203052F300C32ECC /* Antlr4.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E0931B80203B462600B84863 /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = E0931B7C203B462600B84863 /* MyCertificate.c */; };
 		E0931B83203C40C900B84863 /* Java9PrintRulesWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0931B82203C40C900B84863 /* Java9PrintRulesWalker.swift */; };
+		E0931B8A203C91EF00B84863 /* ConvertedOutputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0931B89203C91EF00B84863 /* ConvertedOutputViewController.swift */; };
 		E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -110,6 +111,7 @@
 		E084DF3C2030541500C32ECC /* Java9.tokens */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Java9.tokens; sourceTree = "<group>"; };
 		E0931B7C203B462600B84863 /* MyCertificate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MyCertificate.c; sourceTree = "<group>"; };
 		E0931B82203C40C900B84863 /* Java9PrintRulesWalker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Java9PrintRulesWalker.swift; sourceTree = "<group>"; };
+		E0931B89203C91EF00B84863 /* ConvertedOutputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertedOutputViewController.swift; sourceTree = "<group>"; };
 		E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFilesTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -186,6 +188,7 @@
 			children = (
 				554547B81F474987002C309C /* HomeViewController.swift */,
 				E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */,
+				E0931B89203C91EF00B84863 /* ConvertedOutputViewController.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -438,6 +441,7 @@
 			files = (
 				E084DF3D2030541500C32ECC /* Java9Visitor.swift in Sources */,
 				E084DF442030541500C32ECC /* Java9BaseVisitor.swift in Sources */,
+				E0931B8A203C91EF00B84863 /* ConvertedOutputViewController.swift in Sources */,
 				55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */,
 				554547B91F474987002C309C /* HomeViewController.swift in Sources */,
 				E084DF3E2030541500C32ECC /* Java9Parser.swift in Sources */,

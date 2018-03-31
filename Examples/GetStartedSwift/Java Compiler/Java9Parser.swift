@@ -8,7 +8,7 @@ open class Java9Parser: Parser {
         case Java9Parser.Tokens.LPAREN.rawValue:
             let lParenToken = CommonTokenFactory().create(Java9Parser.Tokens.LPAREN.rawValue, "(")
             let intToken = CommonTokenFactory().create(Java9Parser.Tokens.INT.rawValue, "int")
-            _input.replaceToken(atIndex: 2, withTokens: [lParenToken, intToken])
+            _input.replaceToken(atIndex: _input.index(), withTokens: [lParenToken, intToken])
             return true
         default: return false
         }
@@ -14105,9 +14105,17 @@ open class Java9Parser: Parser {
 		 	}
 		}
 		catch ANTLRException.recognition(let re) {
-			_localctx.exception = re
-			_errHandler.reportError(self, re)
-			try _errHandler.recover(self, re)
+            /* FIX: Incorrectly recognises "(int" as "lint", but adaptive prediction avoids calling basicForStatement */
+            do {
+                try enterOuterAlt(_localctx, 1)
+                setState(1779)
+                try basicForStatement()
+            } catch ANTLRException.recognition(let re) {
+            /* END FIX */
+                _localctx.exception = re
+                _errHandler.reportError(self, re)
+                try _errHandler.recover(self, re)
+            }
 		}
 
 		return _localctx

@@ -48,6 +48,161 @@ class Java9PrintRulesWalker: Java9BaseVisitor<String> {
         return "visitMethodBody \n" + "\(visitChildren(ctx) ?? "" )"
     }
     
+    open override func visitBlock(_ ctx: Java9Parser.BlockContext) -> String? {
+        print("visitBlock \(ctx.getText())")
+        return "visitBlock \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitBlockStatements(_ ctx: Java9Parser.BlockStatementsContext) -> String? {
+        print("visitBlockStatements \(ctx.getText())")
+        return "visitBlockStatements \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitBlockStatement(_ ctx: Java9Parser.BlockStatementContext) -> String? {
+        print("visitBlockStatement \(ctx.getText())")
+        return "visitBlockStatement \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitStatement(_ ctx: Java9Parser.StatementContext) -> String? {
+        print("visitStatement \(ctx.getText())")
+        return "visitStatement \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitForStatement(_ ctx: Java9Parser.ForStatementContext) -> String? {
+        print("visitForStatement \(ctx.getText())")
+        return "visitForStatement \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitLocalVariableDeclarationStatement(_ ctx: Java9Parser.LocalVariableDeclarationStatementContext) -> String? {
+        print("visitLocalVariableDeclarationStatement \(ctx.getText())")
+        return "visitLocalVariableDeclarationStatement \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitLocalVariableDeclaration(_ ctx: Java9Parser.LocalVariableDeclarationContext) -> String? {
+        print("visitLocalVariableDeclaration \(ctx.getText())")
+        return "visitLocalVariableDeclaration \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitVariableDeclaratorList(_ ctx: Java9Parser.VariableDeclaratorListContext) -> String? {
+        print("visitVariableDeclaratorList \(ctx.getText())")
+        return "visitVariableDeclaratorList \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitVariableDeclarator(_ ctx: Java9Parser.VariableDeclaratorContext) -> String? {
+        print("visitVariableDeclarator \(ctx.getText())")
+        return "visitVariableDeclarator \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitVariableInitializer(_ ctx: Java9Parser.VariableInitializerContext) -> String? {
+        print("visitVariableInitializer \(ctx.getText())")
+        return "visitVariableInitializer \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitExpression(_ ctx: Java9Parser.ExpressionContext) -> String? {
+        print("visitExpression \(ctx.getText())")
+        return "visitExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitAssignmentExpression(_ ctx: Java9Parser.AssignmentExpressionContext) -> String? {
+        print("visitAssignmentExpression \(ctx.getText())")
+        return "visitAssignmentExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitConditionalExpression(_ ctx: Java9Parser.ConditionalExpressionContext) -> String? {
+        print("visitConditionalExpression \(ctx.getText())")
+        return "visitConditionalExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitConditionalOrExpression(_ ctx: Java9Parser.ConditionalOrExpressionContext) -> String? {
+        print("visitConditionalOrExpression \(ctx.getText())")
+        return "visitConditionalOrExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitConditionalAndExpression(_ ctx: Java9Parser.ConditionalAndExpressionContext) -> String? {
+        print("visitConditionalAndExpression \(ctx.getText())")
+        return "visitConditionalAndExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitInclusiveOrExpression(_ ctx: Java9Parser.InclusiveOrExpressionContext) -> String? {
+        print("visitInclusiveOrExpression \(ctx.getText())")
+        return "visitInclusiveOrExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitExclusiveOrExpression(_ ctx: Java9Parser.ExclusiveOrExpressionContext) -> String? {
+        print("visitExclusiveOrExpression \(ctx.getText())")
+        return "visitExclusiveOrExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitAndExpression(_ ctx: Java9Parser.AndExpressionContext) -> String? {
+        print("visitAndExpression \(ctx.getText())")
+        return "visitAndExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitEqualityExpression(_ ctx: Java9Parser.EqualityExpressionContext) -> String? {
+        print("visitEqualityExpression \(ctx.getText())")
+        return "visitEqualityExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitRelationalExpression(_ ctx: Java9Parser.RelationalExpressionContext) -> String? {
+        print("visitRelationalExpression \(ctx.getText())")
+        return "visitRelationalExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitShiftExpression(_ ctx: Java9Parser.ShiftExpressionContext) -> String? {
+        print("visitShiftExpression \(ctx.getText())")
+        return "visitShiftExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitAdditiveExpression(_ ctx: Java9Parser.AdditiveExpressionContext) -> String? {
+        print("visitAdditiveExpression \(ctx.getText())")
+        return "visitAdditiveExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitMultiplicativeExpression(_ ctx: Java9Parser.MultiplicativeExpressionContext) -> String? {
+        print("visitMultiplicativeExpression \(ctx.getText())")
+        return "visitMultiplicativeExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitUnaryExpression(_ ctx: Java9Parser.UnaryExpressionContext) -> String? {
+        print("visitUnaryExpression \(ctx.getText())")
+        return "visitUnaryExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitUnaryExpressionNotPlusMinus(_ ctx: Java9Parser.UnaryExpressionNotPlusMinusContext) -> String? {
+        print("visitUnaryExpressionNotPlusMinus \(ctx.getText())")
+        return "visitUnaryExpressionNotPlusMinus \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitPostfixExpression(_ ctx: Java9Parser.PostfixExpressionContext) -> String? {
+        print("visitPostfixExpression \(ctx.getText())")
+        return "visitPostfixExpression \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitPrimary(_ ctx: Java9Parser.PrimaryContext) -> String? {
+        print("visitPrimary \(ctx.getText())")
+        return "visitPrimary \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitPrimaryNoNewArray_lfno_primary(_ ctx: Java9Parser.PrimaryNoNewArray_lfno_primaryContext) -> String? {
+        print("visitPrimaryNoNewArray_lfno_primary \(ctx.getText())")
+        return "visitPrimaryNoNewArray_lfno_primary \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitLiteral(_ ctx: Java9Parser.LiteralContext) -> String? {
+        print("visitLiteral \(ctx.getText())")
+        return "visitLiteral \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitExpressionName(_ ctx: Java9Parser.ExpressionNameContext) -> String? {
+        print("visitExpressionName \(ctx.getText())")
+        return "visitExpressionName \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
+    open override func visitAmbiguousName(_ ctx: Java9Parser.AmbiguousNameContext) -> String? {
+        print("visitAmbiguousName \(ctx.getText())")
+        return "visitAmbiguousName \n" + "\(visitChildren(ctx) ?? "" )"
+    }
+    
     open override func visitResult(_ ctx: Java9Parser.ResultContext) -> String? {
         print("visitResult \(ctx.getText())")
         return "visitResult \n" + "\(visitChildren(ctx) ?? "" )"

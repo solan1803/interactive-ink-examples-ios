@@ -164,7 +164,7 @@ class HomeViewController: UIViewController {
                         for w in words {
                             if let candidates = w["candidates"] {
                                 let candidatesOnOneLine = (candidates as? [String])?.joined(separator: " ");
-                                candidateWords += "\(candidatesOnOneLine) ----- "
+                                candidateWords += "\(candidatesOnOneLine ?? "no candidate words") \n "
                             }
                         }
                         let result = getParseTree(label)

@@ -10,13 +10,15 @@ import UIKit
 
 class ConvertedOutputViewController: UIViewController {
 
-    @IBOutlet weak var outputLabel: UILabel!
+    
+    @IBOutlet weak var outputLabel: UITextView!
     
     var convertedText: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         outputLabel.text = convertedText
+        outputLabel.isEditable = false
         // Do any additional setup after loading the view.
     }
 

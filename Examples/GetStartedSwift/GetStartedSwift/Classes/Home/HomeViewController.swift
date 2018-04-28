@@ -150,25 +150,60 @@ class HomeViewController: UIViewController {
         editorViewController.editor.redo()
     }
     
+    private var wordsList: [[Word]] = []
+    
      func convertButtonWasTouchedUpInside() -> String {
         do {
             //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
             let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
             let exportJSON = export.toJSON()
-            //print(exportJSON)
+            print(exportJSON)
+            wordsList = []
             if let jsonObj = exportJSON as? [String: Any] {
                 if let children = jsonObj["children"] as? [[String: Any]] {
-                    let label = "\(children[0]["label"]!)"
+                    let completeLabel = "\(children[0]["label"]!)"
                     if let words = children[0]["words"] as? [[String: Any]] {
                         var candidateWords = "";
+                        var lineOfWords : [Word] = []
                         for w in words {
-                            if let candidates = w["candidates"] {
-                                let candidatesOnOneLine = (candidates as? [String])?.joined(separator: " ");
-                                candidateWords += "\(candidatesOnOneLine ?? "no candidate words") \n "
+                            if let label = w["label"] {
+                                if label as? String != " " {
+                                    if label as? String == "\n" {
+                                        wordsList.append(lineOfWords)
+                                        lineOfWords = []
+                                        candidateWords += "NEWLINE \n"
+                                    } else {
+                                        candidateWords += "(label: \(label))    "
+                                        if let candidates = w["candidates"] {
+                                            let newWord = Word(label: label as! String, candidates: candidates as! [String])
+                                            lineOfWords.append(newWord)
+                                            let candidatesOnOneLine = (candidates as? [String])?.joined(separator: " ");
+                                            candidateWords += "\(candidatesOnOneLine ?? "could not join candidate words") \n "
+                                        } else {
+                                            let newWord = Word(label: label as! String, candidates: [])
+                                            lineOfWords.append(newWord)
+                                            candidateWords += "no candidate words \n"
+                                        }
+                                    }
+                                }
+                            } else {
+                                candidateWords += "ERROR: no label \n"
                             }
+                            
                         }
-                        let result = getParseTree(label)
-                        return "MyScript Recognition: \n \(label) \n Candidates: \n \(candidateWords) \n \(result)"
+                        // Remember to add last line of words to wordlist
+                        wordsList.append(lineOfWords)
+                        let preprocessErrors = preprocessMyScriptRecognition()
+                        var preprocessRecognition = ""
+                        for eachLine in wordsList {
+                            for w in eachLine {
+                                preprocessRecognition += w.label
+                                preprocessRecognition += " "
+                            }
+                            preprocessRecognition += "\n "
+                        }
+                        let result = getParseTree(completeLabel)
+                        return "MyScript Recognition: \n \(completeLabel) \n PreProcessing Stage: \n \(preprocessRecognition) \n Candidates: \n \(candidateWords) \n PreProcessResult: \(preprocessErrors) \n \(result)"
                         //outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords)"
                     }
                 }
@@ -178,6 +213,41 @@ class HomeViewController: UIViewController {
             print("Error while converting : " + error.localizedDescription)
         }
         return ""
+    }
+    
+    func preprocessMyScriptRecognition() -> String {
+        var preprocessMessage = "PREPROCESS ERRORS AT LINES: \n"
+        for (index, eachLine) in wordsList.enumerated() {
+            // Each line of code should end with a { or a ; (we are excluding short if-statements)
+            // Otherwise line of code should only have one character the closing curly brace }
+            // This is forcing the code to be in a certain style!
+            // Also this analysis wont work if the user writes one line of code over multiple lines????
+            if eachLine.last?.label != "{" && eachLine.last?.label != ";" &&
+                !(eachLine.last?.label == "}" && eachLine.count == 1) {
+                if eachLine.count == 1 && eachLine.last?.label.count == 1 && eachLine.last?.label != "}" {
+                    // If there is only one character on the line it has to be }
+                    preprocessMessage += "Line \(index) - If only one character on line then has to be } \n"
+                    eachLine.last?.label = "}"
+                } else {
+                    // Loop through candidates and see if { or ; comes first and use this as label
+                    var fixed = false
+                    for c in (eachLine.last?.candidates)! {
+                        if c == "{" || c == ";" {
+                            preprocessMessage += "Line \(index) - Fix last character should be '{' or ';', we made it \(c) \n"
+                            eachLine.last?.label = c
+                            fixed = true
+                            break
+                        }
+                    }
+                    if !fixed {
+                        preprocessMessage += "Line \(index) - Could not fix last character to be { or ; since not in candidates \n"
+                        // maybe could look at first word to categorise the line to see if it should end in a '{'.... looking at first word wont help in categorising start of function
+                        // ... may as well fix inside ANTLR in the match function when trying to match { but failing!
+                    }
+                }
+            }
+        }
+        return preprocessMessage
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -260,6 +330,16 @@ class HomeViewController: UIViewController {
         }
     }
     
+}
+
+public class Word {
+    var label: String
+    var candidates: [String]
+    
+    init(label l: String, candidates c: [String]) {
+        label = l
+        candidates = c
+    }
 }
 
 extension String {

@@ -46,6 +46,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("Failed to set temporary folder: " + error.localizedDescription)
             return nil
         }
+        
+        // Set character level recogntion
+        do {
+            try engine.configuration.setBoolean("export.jiix.text.chars", value: true)
+        } catch {
+            print("Failed to set character level recognition")
+            return nil
+        }
 
         return engine
     }()

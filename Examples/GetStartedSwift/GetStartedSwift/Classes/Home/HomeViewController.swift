@@ -152,6 +152,7 @@ class HomeViewController: UIViewController {
     
     private var wordsList: [[Word]] = []
     
+    
      func convertButtonWasTouchedUpInside() -> String {
         do {
             //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
@@ -176,11 +177,13 @@ class HomeViewController: UIViewController {
                                         candidateWords += "(label: \(label))    "
                                         if let candidates = w["candidates"] {
                                             let newWord = Word(label: label as! String, candidates: candidates as! [String])
+                                            newWord.injectCandidates()
                                             lineOfWords.append(newWord)
                                             let candidatesOnOneLine = (candidates as? [String])?.joined(separator: " ");
                                             candidateWords += "\(candidatesOnOneLine ?? "could not join candidate words") \n "
                                         } else {
                                             let newWord = Word(label: label as! String, candidates: [])
+                                            newWord.injectCandidates()
                                             lineOfWords.append(newWord)
                                             candidateWords += "no candidate words \n"
                                         }
@@ -333,12 +336,26 @@ class HomeViewController: UIViewController {
 }
 
 public class Word {
+    
+    private var injectionList = [
+        Word(label: "C", candidates: ["("]),
+        Word(label: "D", candidates: ["1)", "))"])
+    ]
+    
     var label: String
     var candidates: [String]
     
     init(label l: String, candidates c: [String]) {
         label = l
         candidates = c
+    }
+    
+    public func injectCandidates() {
+        for i in injectionList {
+            if i.label.count <= label.count && label.prefix(i.label.count) == i.label {
+                candidates.append(contentsOf: i.candidates)
+            }
+        }
     }
 }
 

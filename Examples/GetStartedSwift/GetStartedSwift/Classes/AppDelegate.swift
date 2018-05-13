@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Set character level recogntion
         do {
-            try engine.configuration.setBoolean("export.jiix.text.chars", value: true)
+            try engine.configuration.setBoolean("export.jiix.text.chars", value: false)
         } catch {
             print("Failed to set character level recognition")
             return nil

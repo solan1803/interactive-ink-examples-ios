@@ -158,7 +158,7 @@ class HomeViewController: UIViewController {
             //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
             let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
             let exportJSON = export.toJSON()
-            print(exportJSON)
+            //print(exportJSON)
             wordsList = []
             if let jsonObj = exportJSON as? [String: Any] {
                 if let children = jsonObj["children"] as? [[String: Any]] {
@@ -166,7 +166,7 @@ class HomeViewController: UIViewController {
                     if let words = children[0]["words"] as? [[String: Any]] {
                         var candidateWords = "";
                         var lineOfWords : [Word] = []
-                        for w in words {
+                        for var w in words {
                             if let label = w["label"] {
                                 if label as? String != " " {
                                     if label as? String == "\n" {
@@ -179,13 +179,14 @@ class HomeViewController: UIViewController {
                                             let newWord = Word(label: label as! String, candidates: candidates as! [String])
                                             newWord.injectCandidates()
                                             lineOfWords.append(newWord)
-                                            let candidatesOnOneLine = (candidates as? [String])?.joined(separator: " ");
-                                            candidateWords += "\(candidatesOnOneLine ?? "could not join candidate words") \n "
+                                            let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
+                                            candidateWords += "\(candidatesOnOneLine) \n "
                                         } else {
                                             let newWord = Word(label: label as! String, candidates: [])
                                             newWord.injectCandidates()
                                             lineOfWords.append(newWord)
-                                            candidateWords += "no candidate words \n"
+                                            let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
+                                            candidateWords += "no candidate words but has injected candidates: \(candidatesOnOneLine) \n"
                                         }
                                     }
                                 }
@@ -218,8 +219,59 @@ class HomeViewController: UIViewController {
         return ""
     }
     
+    func preprocessBracketsFix() -> String {
+        var errorsMessage = ""
+        for (index, eachLine) in wordsList.enumerated() {
+            var leftBracketCount = 0
+            var rightBracketCount = 0
+            var leftSquareBracketCount = 0
+            var rightSquareBracketCount = 0
+            // may also need angle brackets in here
+            
+            // Increment counts
+            for w in eachLine {
+                // what if a label has more than one occurrence of a bracket?
+                leftBracketCount = leftBracketCount + w.label.components(separatedBy: "(").count - 1
+                rightBracketCount = rightBracketCount + w.label.components(separatedBy: ")").count - 1
+                leftSquareBracketCount = leftSquareBracketCount + w.label.components(separatedBy: "[").count - 1
+                rightSquareBracketCount = rightSquareBracketCount + w.label.components(separatedBy: "]").count - 1
+            }
+            
+            if leftBracketCount != rightBracketCount {
+                errorsMessage += "Line \(index): LeftBracketCount(\(leftBracketCount)), RightBracketCount(\(rightBracketCount)) \n"
+                // Let's attempt to fix mismatch of only one bracket
+                let missingBracket = leftBracketCount > rightBracketCount ? ")" : "("
+                for w in eachLine {
+                    // The word may already have a bracket, we need to check candidates to see if it has two brackets
+                    for c in w.candidates {
+                        // e.g. "test(" will have count of 2
+                        if c.components(separatedBy: missingBracket).count - 1 == w.label.components(separatedBy: missingBracket).count - 1 + 1 {
+                            errorsMessage += "Could replace \(w.label) with \(c) \n"
+                        }
+                    }
+                }
+            }
+            
+            if leftSquareBracketCount != rightSquareBracketCount {
+                errorsMessage += "Line \(index): LeftSquareBracketCount(\(leftSquareBracketCount)), RightSquareBracketCount(\(rightSquareBracketCount)) \n"
+                let missingBracket = leftSquareBracketCount > rightSquareBracketCount ? "]" : "["
+                for w in eachLine {
+                    // The word may already have a bracket, we need to check candidates to see if it has two brackets
+                    for c in w.candidates {
+                        // e.g. "test(" will have count of 2
+                        if c.components(separatedBy: missingBracket).count - 1 == w.label.components(separatedBy: missingBracket).count - 1 + 1 {
+                            errorsMessage += "Could replace \(w.label) with \(c) \n"
+                        }
+                    }
+                }
+            }
+        }
+        return errorsMessage
+    }
+    
     func preprocessMyScriptRecognition() -> String {
         var preprocessMessage = "PREPROCESS ERRORS AT LINES: \n"
+        preprocessMessage += preprocessBracketsFix()
         for (index, eachLine) in wordsList.enumerated() {
             // Each line of code should end with a { or a ; (we are excluding short if-statements)
             // Otherwise line of code should only have one character the closing curly brace }
@@ -246,6 +298,7 @@ class HomeViewController: UIViewController {
                         preprocessMessage += "Line \(index) - Could not fix last character to be { or ; since not in candidates \n"
                         // maybe could look at first word to categorise the line to see if it should end in a '{'.... looking at first word wont help in categorising start of function
                         // ... may as well fix inside ANTLR in the match function when trying to match { but failing!
+                        // this may be a contender for adding to the user defined list of injection candidates
                     }
                 }
             }
@@ -282,7 +335,14 @@ class HomeViewController: UIViewController {
                 let printStr = Java9PrintRulesWalker(parser).visit(tree) ?? ""
                 print("\(printStr)")
                 let treeString = tree.getText()
-                result = "Parse Tree: \n \(printStr) \n Final Output: \n \(treeString)"
+                var tokenList = ""
+                for t in tokens.getTokens() {
+                    tokenList += "\(lexer.getVocabulary().getSymbolicName(t.getType()) ?? "") "
+                    if t.getText() == "{" || t.getText() == "}" || t.getText() == ";" {
+                        tokenList += "\n"
+                    }
+                }
+                result = "Token List: \(tokenList) \n Parse Tree: \n \(printStr) \n Final Output: \n \(treeString)"
             }
         }
         return result
@@ -335,12 +395,12 @@ class HomeViewController: UIViewController {
     
 }
 
+public var injectionList = [
+    Word(label: "C", candidates: ["("]),
+    Word(label: "D", candidates: ["1)", "))"])
+]
+
 public class Word {
-    
-    private var injectionList = [
-        Word(label: "C", candidates: ["("]),
-        Word(label: "D", candidates: ["1)", "))"])
-    ]
     
     var label: String
     var candidates: [String]
@@ -351,9 +411,22 @@ public class Word {
     }
     
     public func injectCandidates() {
+        // This looks like its going to be really expensive, so maybe only call this when you realise a bracket mismatch.
         for i in injectionList {
-            if i.label.count <= label.count && label.prefix(i.label.count) == i.label {
-                candidates.append(contentsOf: i.candidates)
+            let indices = label.indicesOf(string: i.label)
+            if indices.count > 0 {
+                for index in indices {
+                    for c in i.candidates {
+                        // Create prefix, add replacement, join suffix, create word, inject that word, add candidates of that
+                        let prefix = label.prefix(index)
+                        let suffix = label.suffix(label.count - index-1)
+                        let newString = prefix + c + suffix
+                        let newWord = Word(label: String(newString), candidates: [])
+                        newWord.injectCandidates()
+                        candidates.append(newWord.label)
+                        candidates.append(contentsOf: newWord.candidates)
+                    }
+                }
             }
         }
     }
@@ -363,6 +436,22 @@ extension String {
     func toJSON() -> Any? {
         guard let data = self.data(using: .utf8, allowLossyConversion: false) else { return nil }
         return try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
+    }
+    
+    func indicesOf(string: String) -> [Int] {
+        var indices = [Int]()
+        var searchStartIndex = self.startIndex
+        
+        while searchStartIndex < self.endIndex,
+            let range = self.range(of: string, range: searchStartIndex..<self.endIndex),
+            !range.isEmpty
+        {
+            let index = distance(from: self.startIndex, to: range.lowerBound)
+            indices.append(index)
+            searchStartIndex = range.upperBound
+        }
+        
+        return indices
     }
 }
 

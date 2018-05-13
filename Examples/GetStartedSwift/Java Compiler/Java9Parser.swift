@@ -4,14 +4,14 @@ import Antlr4
 open class Java9Parser: Parser {
     
     open override func canFixAndMoveOn(_ ttype: Int) -> Bool {
-        switch (ttype) {
-        case Java9Parser.Tokens.LPAREN.rawValue:
-            let lParenToken = CommonTokenFactory().create(Java9Parser.Tokens.LPAREN.rawValue, "(")
-            let intToken = CommonTokenFactory().create(Java9Parser.Tokens.INT.rawValue, "int")
-            _input.replaceToken(atIndex: 2, withTokens: [lParenToken, intToken])
-            return true
-        default: return false
-        }
+//        switch (ttype) {
+//        case Java9Parser.Tokens.LPAREN.rawValue:
+//            let lParenToken = CommonTokenFactory().create(Java9Parser.Tokens.LPAREN.rawValue, "(")
+//            let intToken = CommonTokenFactory().create(Java9Parser.Tokens.INT.rawValue, "int")
+//            _input.replaceToken(atIndex: 2, withTokens: [lParenToken, intToken])
+//            return true
+        return false
+//        }
     }
 
 	internal static var _decisionToDFA: [DFA] = {

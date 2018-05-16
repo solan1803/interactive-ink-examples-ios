@@ -23,6 +23,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var loadBarButtonItem: UIBarButtonItem!
     @IBOutlet weak var convertBarButtonItem: UIBarButtonItem!
     @IBOutlet weak var settingsBarButtonItem: UIBarButtonItem!
+    @IBOutlet weak var highlightSwitch: UISwitch!
     
     override func viewWillAppear(_ animated: Bool) {
         let defaults = UserDefaults.standard
@@ -404,6 +405,54 @@ class HomeViewController: UIViewController {
         } catch {
             print("Error while enumerating files: \(error.localizedDescription)")
         }
+    }
+    
+    var highlightViews: [UIView] = []
+    
+    @IBAction func addHighlightViews(_ sender: Any) {
+        do {
+            let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
+            let exportJSON = export.toJSON()
+            print(exportJSON)
+            if let _ = sender as? UIBarButtonItem {
+                if highlightSwitch.isOn {
+                    print("turn off switch")
+                    highlightSwitch.setOn(false, animated: true)
+                } else {
+                    print("turn on switch")
+                    highlightSwitch.setOn(true, animated: true)
+                }
+            }
+            if highlightSwitch.isOn {
+                let myNewView=UIView(frame: CGRect(x: 24*5.2, y: 16.2+135, width: 10.8*5, height: 7.9*5))
+                
+                // Change UIView background colour
+                myNewView.backgroundColor=UIColor.lightGray
+                
+                // Change UIView Border Color to Red
+                myNewView.layer.borderColor = UIColor.red.cgColor
+                
+                myNewView.alpha = 0.5
+                
+                let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+                myNewView.addGestureRecognizer(tap)
+                // Add UIView as a Subview
+                self.view.addSubview(myNewView)
+                
+                highlightViews.append(myNewView)
+            } else {
+                for view in highlightViews {
+                    view.removeFromSuperview()
+                }
+            }
+        } catch {
+            print("Error trying to highlight")
+        }
+        
+    }
+    
+    @objc func handleTap() {
+        print("Tapped")
     }
     
 }

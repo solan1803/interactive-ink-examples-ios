@@ -34,6 +34,8 @@
 		E0931B83203C40C900B84863 /* Java9PrintRulesWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0931B82203C40C900B84863 /* Java9PrintRulesWalker.swift */; };
 		E0931B8A203C91EF00B84863 /* ConvertedOutputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0931B89203C91EF00B84863 /* ConvertedOutputViewController.swift */; };
 		E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */; };
+		E0E7C6E920A83BB000E87D07 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E7C6E820A83BB000E87D07 /* SettingsTableViewController.swift */; };
+		E0E7C6EB20A8C19E00E87D07 /* InjectionCandidateWordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E7C6EA20A8C19E00E87D07 /* InjectionCandidateWordViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +115,8 @@
 		E0931B82203C40C900B84863 /* Java9PrintRulesWalker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Java9PrintRulesWalker.swift; sourceTree = "<group>"; };
 		E0931B89203C91EF00B84863 /* ConvertedOutputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertedOutputViewController.swift; sourceTree = "<group>"; };
 		E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFilesTableViewController.swift; sourceTree = "<group>"; };
+		E0E7C6E820A83BB000E87D07 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
+		E0E7C6EA20A8C19E00E87D07 /* InjectionCandidateWordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionCandidateWordViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,8 +191,10 @@
 			isa = PBXGroup;
 			children = (
 				554547B81F474987002C309C /* HomeViewController.swift */,
+				E0E7C6E820A83BB000E87D07 /* SettingsTableViewController.swift */,
 				E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */,
 				E0931B89203C91EF00B84863 /* ConvertedOutputViewController.swift */,
+				E0E7C6EA20A8C19E00E87D07 /* InjectionCandidateWordViewController.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -439,6 +445,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0E7C6EB20A8C19E00E87D07 /* InjectionCandidateWordViewController.swift in Sources */,
 				E084DF3D2030541500C32ECC /* Java9Visitor.swift in Sources */,
 				E084DF442030541500C32ECC /* Java9BaseVisitor.swift in Sources */,
 				E0931B8A203C91EF00B84863 /* ConvertedOutputViewController.swift in Sources */,
@@ -450,6 +457,7 @@
 				E084DF462030541500C32ECC /* Java9Lexer.swift in Sources */,
 				E084DF472030541500C32ECC /* Java9Listener.swift in Sources */,
 				E084DF432030541500C32ECC /* Java9BaseListener.swift in Sources */,
+				E0E7C6E920A83BB000E87D07 /* SettingsTableViewController.swift in Sources */,
 				E084DF402030541500C32ECC /* Java9ParserATN.swift in Sources */,
 				E0931B83203C40C900B84863 /* Java9PrintRulesWalker.swift in Sources */,
 				E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */,

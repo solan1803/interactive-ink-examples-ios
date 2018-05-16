@@ -22,12 +22,25 @@ class HomeViewController: UIViewController {
     
     @IBOutlet weak var loadBarButtonItem: UIBarButtonItem!
     @IBOutlet weak var convertBarButtonItem: UIBarButtonItem!
+    @IBOutlet weak var settingsBarButtonItem: UIBarButtonItem!
+    
+    override func viewWillAppear(_ animated: Bool) {
+        let defaults = UserDefaults.standard
+        let dictionary = defaults.dictionary(forKey: "InjectionCandidates")
+        injectionList = []
+        for k in (dictionary?.keys)! {
+            let w = Word(label: k, candidates: dictionary![k] as! [String])
+            injectionList.append(w)
+        }
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         loadBarButtonItem.isEnabled = false
         loadBarButtonItem.isEnabled = true
         convertBarButtonItem.isEnabled = false
         convertBarButtonItem.isEnabled = true
+        settingsBarButtonItem.isEnabled = false
+        settingsBarButtonItem.isEnabled = true
     }
     
     @objc func renameTitle() {
@@ -177,13 +190,13 @@ class HomeViewController: UIViewController {
                                         candidateWords += "(label: \(label))    "
                                         if let candidates = w["candidates"] {
                                             let newWord = Word(label: label as! String, candidates: candidates as! [String])
-                                            newWord.injectCandidates()
+                                            newWord.injectCandidates(startIndex: 0)
                                             lineOfWords.append(newWord)
                                             let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
                                             candidateWords += "\(candidatesOnOneLine) \n "
                                         } else {
                                             let newWord = Word(label: label as! String, candidates: [])
-                                            newWord.injectCandidates()
+                                            newWord.injectCandidates(startIndex: 0)
                                             lineOfWords.append(newWord)
                                             let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
                                             candidateWords += "no candidate words but has injected candidates: \(candidatesOnOneLine) \n"
@@ -395,10 +408,11 @@ class HomeViewController: UIViewController {
     
 }
 
-public var injectionList = [
-    Word(label: "C", candidates: ["("]),
-    Word(label: "D", candidates: ["1)", "))"])
-]
+public var injectionList: [Word] = []
+    //[
+//    Word(label: "C", candidates: ["("]),
+//    Word(label: "D", candidates: ["1)", "))"])
+//]
 
 public class Word {
     
@@ -410,21 +424,23 @@ public class Word {
         candidates = c
     }
     
-    public func injectCandidates() {
+    public func injectCandidates(startIndex: Int) {
         // This looks like its going to be really expensive, so maybe only call this when you realise a bracket mismatch.
-        for i in injectionList {
-            let indices = label.indicesOf(string: i.label)
-            if indices.count > 0 {
-                for index in indices {
-                    for c in i.candidates {
-                        // Create prefix, add replacement, join suffix, create word, inject that word, add candidates of that
-                        let prefix = label.prefix(index)
-                        let suffix = label.suffix(label.count - index-1)
-                        let newString = prefix + c + suffix
-                        let newWord = Word(label: String(newString), candidates: [])
-                        newWord.injectCandidates()
-                        candidates.append(newWord.label)
-                        candidates.append(contentsOf: newWord.candidates)
+        for (injIndex, i) in injectionList.enumerated() {
+            if (injIndex >= startIndex) {
+                let indices = label.indicesOf(string: i.label)
+                if indices.count > 0 {
+                    for index in indices {
+                        for c in i.candidates {
+                            // Create prefix, add replacement, join suffix, create word, inject that word, add candidates of that
+                            let prefix = label.prefix(index)
+                            let suffix = label.suffix(label.count - index-1)
+                            let newString = prefix + c + suffix
+                            let newWord = Word(label: String(newString), candidates: [])
+                            newWord.injectCandidates(startIndex: injIndex + 1)
+                            candidates.append(newWord.label)
+                            candidates.append(contentsOf: newWord.candidates)
+                        }
                     }
                 }
             }

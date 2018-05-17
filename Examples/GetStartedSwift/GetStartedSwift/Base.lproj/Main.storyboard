@@ -257,6 +257,7 @@
                         <outlet property="inputTypeSegmentedControl" destination="woc-B8-dRe" id="z0z-gc-dJT"/>
                         <outlet property="loadBarButtonItem" destination="77p-m0-euH" id="63j-TF-XsQ"/>
                         <outlet property="otherTextField" destination="ODC-aH-OTi" id="MrK-8x-h7Z"/>
+                        <outlet property="outputTextField" destination="J3J-LR-W59" id="owG-jY-EY5"/>
                         <outlet property="settingsBarButtonItem" destination="Rnr-Bx-gS1" id="kV5-cH-UpV"/>
                         <outlet property="wordLabel" destination="jfo-LE-oUh" id="MKC-d2-N5Y"/>
                     </connections>

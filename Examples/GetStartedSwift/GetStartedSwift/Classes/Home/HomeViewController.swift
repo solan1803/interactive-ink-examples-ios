@@ -2,6 +2,7 @@
 
 import UIKit
 import Antlr4
+import Highlightr
 
 class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
     
@@ -29,6 +30,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBOutlet weak var wordLabel: UILabel!
     @IBOutlet weak var candidatesPickerView: UIPickerView!
     @IBOutlet weak var otherTextField: UITextField!
+    @IBOutlet weak var outputTextField: UITextView!
     
     override func viewWillAppear(_ animated: Bool) {
         let defaults = UserDefaults.standard
@@ -487,6 +489,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     @IBAction func addHighlightViews(_ sender: Any) {
+        syntaxHighlight()
         if highlightSwitch.isOn {
             for (lineIndex, line) in wordsList.enumerated() {
                 var lineOfHighlightedWords: [HighlightWordView] = []
@@ -519,6 +522,21 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             selectedHighlightWord = nil
             highlightWordViews = []
         }
+    }
+    
+    func syntaxHighlight() {
+        let highlightr = Highlightr()
+        highlightr?.setTheme(to: "paraiso-dark")
+        var code = ""
+        for eachLine in wordsList {
+            for w in eachLine {
+                code = code + "\(w.label) "
+            }
+            code = code + "\n"
+        }
+        // You can omit the second parameter to use automatic language detection.
+        let highlightedCode = highlightr?.highlight(code, as: "java")
+        outputTextField.attributedText = highlightedCode
     }
     
     @objc func handleTap(sender: HighlightWordTapGestureRecognizer) {

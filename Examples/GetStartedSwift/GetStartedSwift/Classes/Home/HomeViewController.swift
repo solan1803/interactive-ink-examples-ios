@@ -203,12 +203,24 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                                             lineOfWords.append(newWord)
                                             let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
                                             candidateWords += "\(candidatesOnOneLine) \n "
+                                            if let boundingBox = w["bounding-box"] as? [String: Any] {
+                                                newWord.x = boundingBox["x"] as! Double
+                                                newWord.y = boundingBox["y"] as! Double
+                                                newWord.width = boundingBox["width"] as! Double
+                                                newWord.height = boundingBox["height"] as! Double
+                                            }
                                         } else {
                                             let newWord = Word(label: label as! String, candidates: [])
                                             newWord.injectCandidates(startIndex: 0)
                                             lineOfWords.append(newWord)
                                             let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
                                             candidateWords += "no candidate words but has injected candidates: \(candidatesOnOneLine) \n"
+                                            if let boundingBox = w["bounding-box"] as? [String: Any] {
+                                                newWord.x = boundingBox["x"] as! Double
+                                                newWord.y = boundingBox["y"] as! Double
+                                                newWord.width = boundingBox["width"] as! Double
+                                                newWord.height = boundingBox["height"] as! Double
+                                            }
                                         }
                                     }
                                 }
@@ -429,28 +441,38 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 wordLabel.text = "Label: "
                 candidatesPickerView.reloadAllComponents()
             }
+            if let old = oldValue{
+                highlightWordViews[old.0][old.1].view.layer.borderColor = UIColor.red.cgColor
+            }
         }
     }
     
     @IBAction func addHighlightViews(_ sender: Any) {
         if highlightSwitch.isOn {
-            let highlightWordView=UIView(frame: CGRect(x: 24*5.2, y: 16.2+135, width: 10.8*5, height: 7.9*5))
-            highlightWordView.backgroundColor=UIColor.lightGray
-            highlightWordView.layer.borderWidth=3
-            highlightWordView.layer.borderColor = UIColor.red.cgColor
-            highlightWordView.alpha = 0.5
-            
-            let tap = HighlightWordTapGestureRecognizer(target: self, action: #selector(handleTap(sender:)))
-            tap.row = 0
-            tap.col = 0
-            highlightWordView.addGestureRecognizer(tap)
-            self.view.addSubview(highlightWordView)
-            
-            let w = Word(label: "test", candidates: ["test1", "test2", "test3"])
-            
-            let hwv = HighlightWordView(word: w, view: highlightWordView)
-            
-            highlightWordViews.append([hwv])
+            for (lineIndex, line) in wordsList.enumerated() {
+                var lineOfHighlightedWords: [HighlightWordView] = []
+                for (wordIndex, w) in line.enumerated() {
+                    let yOffset = lineIndex * 38 + 135
+                    let highlightWordView=UIView(frame: CGRect(x: w.x*5.2, y: (w.y+Double(yOffset)), width: w.width*5, height: w.height*5))
+                    highlightWordView.backgroundColor=UIColor.lightGray
+                    highlightWordView.layer.borderWidth=3
+                    highlightWordView.layer.borderColor = UIColor.red.cgColor
+                    highlightWordView.alpha = 0.5
+                    
+                    let tap = HighlightWordTapGestureRecognizer(target: self, action: #selector(handleTap(sender:)))
+                    tap.row = lineIndex
+                    tap.col = wordIndex
+                    highlightWordView.addGestureRecognizer(tap)
+                    self.view.addSubview(highlightWordView)
+                    
+                    //            let w = Word(label: "test", candidates: ["test1", "test2", "test3"])
+                    
+                    let hwv = HighlightWordView(word: w, view: highlightWordView)
+                    
+                    lineOfHighlightedWords.append(hwv)
+                }
+                highlightWordViews.append(lineOfHighlightedWords)
+            }
         } else {
             for line in highlightWordViews {
                 for hwv in line {
@@ -470,12 +492,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     @IBAction func cancelSelectedHighlightWord(_ sender: Any) {
-        // set border color of clicked word back to red
-        if let selectedWord = selectedHighlightWord {
-            highlightWordViews[selectedWord.0][selectedWord.1].view.layer.borderColor = UIColor.red.cgColor
-            // set selectedWord indexes back to default -1
-            selectedHighlightWord = nil
-        }
+        selectedHighlightWord = nil
     }
     
     // MARK: CANDIDATES_PICKER_VIEW METHODS
@@ -527,6 +544,10 @@ public class Word {
     
     var label: String
     var candidates: [String]
+    public var x = 0.0
+    public var y = 0.0
+    public var width = 0.0
+    public var height = 0.0
     
     init(label l: String, candidates c: [String]) {
         label = l

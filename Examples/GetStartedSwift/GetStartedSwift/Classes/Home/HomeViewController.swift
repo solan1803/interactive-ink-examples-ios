@@ -275,28 +275,50 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 errorsMessage += "Line \(index): LeftBracketCount(\(leftBracketCount)), RightBracketCount(\(rightBracketCount)) \n"
                 // Let's attempt to fix mismatch of only one bracket
                 let missingBracket = leftBracketCount > rightBracketCount ? ")" : "("
-                for w in eachLine {
+                var potentialFixes = 0
+                var indexOfWordFix = 0
+                var candidateFix = ""
+                for (wIndex, w) in eachLine.enumerated() {
                     // The word may already have a bracket, we need to check candidates to see if it has two brackets
                     for c in w.candidates {
                         // e.g. "test(" will have count of 2
                         if c.components(separatedBy: missingBracket).count - 1 == w.label.components(separatedBy: missingBracket).count - 1 + 1 {
                             errorsMessage += "Could replace \(w.label) with \(c) \n"
+                            potentialFixes = potentialFixes + 1
+                            indexOfWordFix = wIndex
+                            candidateFix = c
                         }
                     }
+                }
+                if potentialFixes == 1 {
+                    errorsMessage += "Replaced \(eachLine[indexOfWordFix].label) with \(candidateFix) \n"
+                    eachLine[indexOfWordFix].fixProvider = FixProvider.PreprocessingFix(eachLine[indexOfWordFix].label)
+                    eachLine[indexOfWordFix].label = candidateFix
                 }
             }
             
             if leftSquareBracketCount != rightSquareBracketCount {
                 errorsMessage += "Line \(index): LeftSquareBracketCount(\(leftSquareBracketCount)), RightSquareBracketCount(\(rightSquareBracketCount)) \n"
                 let missingBracket = leftSquareBracketCount > rightSquareBracketCount ? "]" : "["
-                for w in eachLine {
+                var potentialFixes = 0
+                var indexOfWordFix = 0
+                var candidateFix = ""
+                for (wIndex, w) in eachLine.enumerated() {
                     // The word may already have a bracket, we need to check candidates to see if it has two brackets
                     for c in w.candidates {
                         // e.g. "test(" will have count of 2
                         if c.components(separatedBy: missingBracket).count - 1 == w.label.components(separatedBy: missingBracket).count - 1 + 1 {
                             errorsMessage += "Could replace \(w.label) with \(c) \n"
+                            potentialFixes = potentialFixes + 1
+                            indexOfWordFix = wIndex
+                            candidateFix = c
                         }
                     }
+                }
+                if potentialFixes == 1 {
+                    errorsMessage += "Replaced \(eachLine[indexOfWordFix].label) with \(candidateFix) \n"
+                    eachLine[indexOfWordFix].fixProvider = FixProvider.PreprocessingFix(eachLine[indexOfWordFix].label)
+                    eachLine[indexOfWordFix].label = candidateFix
                 }
             }
         }
@@ -316,6 +338,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 if eachLine.count == 1 && eachLine.last?.label.count == 1 && eachLine.last?.label != "}" {
                     // If there is only one character on the line it has to be }
                     preprocessMessage += "Line \(index) - If only one character on line then has to be } \n"
+                    eachLine.last?.fixProvider = FixProvider.PreprocessingFix((eachLine.last?.label)!)
                     eachLine.last?.label = "}"
                 } else {
                     // Loop through candidates and see if { or ; comes first and use this as label
@@ -323,6 +346,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     for c in (eachLine.last?.candidates)! {
                         if c == "{" || c == ";" {
                             preprocessMessage += "Line \(index) - Fix last character should be '{' or ';', we made it \(c) \n"
+                            eachLine.last?.fixProvider = FixProvider.PreprocessingFix((eachLine.last?.label)!)
                             eachLine.last?.label = c
                             fixed = true
                             break
@@ -435,10 +459,25 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             if let newSelected = selectedHighlightWord {
                 // update bottom right UI of screen
                 wordLabel.text = "Label: \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
+                if let fixProvider = highlightWordViews[newSelected.0][newSelected.1].word.fixProvider {
+                    var annotation = ""
+                    switch (fixProvider) {
+                    case .UserFix(let s):
+                        annotation = "Annotation: UserFix from \(s) to \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
+                    case.PreprocessingFix(let s):
+                        annotation = "Annotation: Preprocesssing fix from \(s) to \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
+                    case .MachineLayerFix(let s):
+                        annotation = "Annotation: ML fix from \(s) to \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
+                    case .ANTLRFix(let s):
+                        annotation = "Annotation: ANTLR fix from \(s) to \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
+                    }
+                    annotationLabel.text = annotation
+                }
                 candidatesPickerView.reloadAllComponents()
             } else {
                 // reset bottom right UI to default
                 wordLabel.text = "Label: "
+                annotationLabel.text = "Annotation: "
                 candidatesPickerView.reloadAllComponents()
             }
             if let old = oldValue{
@@ -454,7 +493,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 for (wordIndex, w) in line.enumerated() {
                     let yOffset = lineIndex * 38 + 135
                     let highlightWordView=UIView(frame: CGRect(x: w.x*5.2, y: (w.y+Double(yOffset)), width: w.width*5, height: w.height*5))
-                    highlightWordView.backgroundColor=UIColor.lightGray
+                    highlightWordView.backgroundColor = w.fixProvider == nil ? UIColor.lightGray : UIColor.orange
                     highlightWordView.layer.borderWidth=3
                     highlightWordView.layer.borderColor = UIColor.red.cgColor
                     highlightWordView.alpha = 0.5
@@ -464,8 +503,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     tap.col = wordIndex
                     highlightWordView.addGestureRecognizer(tap)
                     self.view.addSubview(highlightWordView)
-                    
-                    //            let w = Word(label: "test", candidates: ["test1", "test2", "test3"])
                     
                     let hwv = HighlightWordView(word: w, view: highlightWordView)
                     
@@ -548,6 +585,7 @@ public class Word {
     public var y = 0.0
     public var width = 0.0
     public var height = 0.0
+    public var fixProvider: FixProvider?
     
     init(label l: String, candidates c: [String]) {
         label = l
@@ -576,6 +614,13 @@ public class Word {
             }
         }
     }
+}
+
+public enum FixProvider {
+    case UserFix(String)
+    case PreprocessingFix(String)
+    case MachineLayerFix(String)
+    case ANTLRFix(String)
 }
 
 extension String {

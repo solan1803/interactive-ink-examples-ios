@@ -125,8 +125,11 @@
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Nwf-fb-7NI">
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Nwf-fb-7NI">
                                                         <rect key="frame" x="83.5" y="0.0" width="51" height="31"/>
+                                                        <connections>
+                                                            <action selector="addHighlightViews:" destination="BYZ-38-t0r" eventType="valueChanged" id="0Vb-Yy-UQP"/>
+                                                        </connections>
                                                     </switch>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RXy-HM-Pz9">
                                                         <rect key="frame" x="142.5" y="0.0" width="57" height="31"/>
@@ -135,6 +138,9 @@
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1wZ-Ts-ho9">
                                                         <rect key="frame" x="209.5" y="0.0" width="48" height="31"/>
                                                         <state key="normal" title="Cancel"/>
+                                                        <connections>
+                                                            <action selector="cancelSelectedHighlightWord:" destination="BYZ-38-t0r" eventType="touchUpInside" id="aIm-nR-OnJ"/>
+                                                        </connections>
                                                     </button>
                                                 </subviews>
                                             </stackView>
@@ -241,28 +247,18 @@
                                     <segue destination="sGK-SX-GD8" kind="show" id="Z1v-kp-Fr5"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem style="plain" id="q1x-EQ-p31">
-                                <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="TFV-qj-Jfw">
-                                    <rect key="frame" x="809.5" y="6.5" width="51" height="31"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <connections>
-                                        <action selector="addHighlightViews:" destination="BYZ-38-t0r" eventType="valueChanged" id="TEe-EI-Fv2"/>
-                                    </connections>
-                                </switch>
-                            </barButtonItem>
-                            <barButtonItem title="Highlight" id="6y2-9c-P0Z">
-                                <connections>
-                                    <action selector="addHighlightViews:" destination="BYZ-38-t0r" id="DVl-Io-xSa"/>
-                                </connections>
-                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
+                        <outlet property="annotationLabel" destination="SBq-DO-3im" id="2P0-vC-mdH"/>
+                        <outlet property="candidatesPickerView" destination="MOD-pz-dYX" id="SBk-bT-t9Y"/>
                         <outlet property="convertBarButtonItem" destination="dbl-Jz-DDd" id="yXR-xx-0nm"/>
-                        <outlet property="highlightSwitch" destination="TFV-qj-Jfw" id="frQ-Ad-a0e"/>
+                        <outlet property="highlightSwitch" destination="Nwf-fb-7NI" id="tag-4K-C0t"/>
                         <outlet property="inputTypeSegmentedControl" destination="woc-B8-dRe" id="z0z-gc-dJT"/>
                         <outlet property="loadBarButtonItem" destination="77p-m0-euH" id="63j-TF-XsQ"/>
+                        <outlet property="otherTextField" destination="ODC-aH-OTi" id="MrK-8x-h7Z"/>
                         <outlet property="settingsBarButtonItem" destination="Rnr-Bx-gS1" id="kV5-cH-UpV"/>
+                        <outlet property="wordLabel" destination="jfo-LE-oUh" id="MKC-d2-N5Y"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

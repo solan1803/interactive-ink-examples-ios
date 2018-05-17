@@ -23,7 +23,12 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBOutlet weak var loadBarButtonItem: UIBarButtonItem!
     @IBOutlet weak var convertBarButtonItem: UIBarButtonItem!
     @IBOutlet weak var settingsBarButtonItem: UIBarButtonItem!
+    
     @IBOutlet weak var highlightSwitch: UISwitch!
+    @IBOutlet weak var annotationLabel: UILabel!
+    @IBOutlet weak var wordLabel: UILabel!
+    @IBOutlet weak var candidatesPickerView: UIPickerView!
+    @IBOutlet weak var otherTextField: UITextField!
     
     override func viewWillAppear(_ animated: Bool) {
         let defaults = UserDefaults.standard
@@ -127,6 +132,9 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         documentTitleButton.setTitleColor(UIColor.black, for: UIControlState.normal)
         documentTitleButton.addTarget(self, action: #selector(self.renameTitle), for: UIControlEvents.touchUpInside)
         self.navigationItem.titleView = documentTitleButton;
+        
+        candidatesPickerView.delegate = self
+        candidatesPickerView.dataSource = self
     }
     
     // MARK: - Create package
@@ -167,7 +175,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     private var wordsList: [[Word]] = []
     
     
-     func convertButtonWasTouchedUpInside() -> String {
+    func convertButtonWasTouchedUpInside() -> String {
         do {
             //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
             let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
@@ -407,108 +415,89 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         }
     }
     
+    // MARK: BOTTOM RIGHT UI FOR HIGHLIGHTING
+    
     var highlightWordViews: [[HighlightWordView]] = []
-    var selectedHighlightWordRow = -1
-    var selectedHighlightWordCol = -1
+    var selectedHighlightWord: (Int, Int)? {
+        didSet {
+            if let newSelected = selectedHighlightWord {
+                // update bottom right UI of screen
+                wordLabel.text = "Label: \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
+                candidatesPickerView.reloadAllComponents()
+            } else {
+                // reset bottom right UI to default
+                wordLabel.text = "Label: "
+                candidatesPickerView.reloadAllComponents()
+            }
+        }
+    }
     
     @IBAction func addHighlightViews(_ sender: Any) {
-        do {
-            let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
-            let exportJSON = export.toJSON()
-            print(exportJSON)
-            if let _ = sender as? UIBarButtonItem {
-                if highlightSwitch.isOn {
-                    print("turn off switch")
-                    highlightSwitch.setOn(false, animated: true)
-                } else {
-                    print("turn on switch")
-                    highlightSwitch.setOn(true, animated: true)
+        if highlightSwitch.isOn {
+            let highlightWordView=UIView(frame: CGRect(x: 24*5.2, y: 16.2+135, width: 10.8*5, height: 7.9*5))
+            highlightWordView.backgroundColor=UIColor.lightGray
+            highlightWordView.layer.borderWidth=3
+            highlightWordView.layer.borderColor = UIColor.red.cgColor
+            highlightWordView.alpha = 0.5
+            
+            let tap = HighlightWordTapGestureRecognizer(target: self, action: #selector(handleTap(sender:)))
+            tap.row = 0
+            tap.col = 0
+            highlightWordView.addGestureRecognizer(tap)
+            self.view.addSubview(highlightWordView)
+            
+            let w = Word(label: "test", candidates: ["test1", "test2", "test3"])
+            
+            let hwv = HighlightWordView(word: w, view: highlightWordView)
+            
+            highlightWordViews.append([hwv])
+        } else {
+            for line in highlightWordViews {
+                for hwv in line {
+                    hwv.view.removeFromSuperview()
                 }
             }
-            if highlightSwitch.isOn {
-                let myNewView=UIView(frame: CGRect(x: 24*5.2, y: 16.2+135, width: 10.8*5, height: 7.9*5))
-                
-                // Change UIView background colour
-                myNewView.backgroundColor=UIColor.lightGray
-                
-                // Change UIView Border Color to Red
-                myNewView.layer.borderWidth=2
-                myNewView.layer.borderColor = UIColor.red.cgColor
-                
-                myNewView.alpha = 0.5
-                
-                let tap = HighlightWordTapGestureRecognizer(target: self, action: #selector(handleTap(sender:)))
-                tap.row = 0
-                tap.col = 0
-                myNewView.addGestureRecognizer(tap)
-                // Add UIView as a Subview
-                self.view.addSubview(myNewView)
-                
-                let w = Word(label: "test", candidates: ["test1", "test2", "test3"])
-                
-                let hwv = HighlightWordView(word: w, view: myNewView)
-                
-                highlightWordViews.append([hwv])
-            } else {
-                for line in highlightWordViews {
-                    for hwv in line {
-                        hwv.view.removeFromSuperview()
-                    }
-                }
-                highlightWordViews = []
-            }
-        } catch {
-            print("Error trying to highlight")
+            selectedHighlightWord = nil
+            highlightWordViews = []
         }
-        
     }
     
     @objc func handleTap(sender: HighlightWordTapGestureRecognizer) {
         print("Tapped")
-        selectedHighlightWordRow = sender.row
-        selectedHighlightWordCol = sender.col
+        selectedHighlightWord = (sender.row, sender.col)
+        // when tap on highlightword, change border color to blue to indicate to the user that they have clicked on it.
         highlightWordViews[sender.row][sender.col].view.layer.borderColor = UIColor.blue.cgColor
-        
-        let correctionView = UIView(frame: CGRect(x: 700, y: 500, width: 200, height: 200))
-        correctionView.backgroundColor=UIColor.green
-        correctionView.layer.borderWidth=2
-        correctionView.layer.borderColor = UIColor.red.cgColor
-        correctionView.alpha = 0.5
-        
-        let dropdown = UIPickerView(frame: CGRect(x: 0, y: 0, width: 150, height: 100))
-        dropdown.delegate = self
-        dropdown.dataSource = self
-        
-        let closeButton = UIButton(frame: CGRect(x: 0, y: 100, width: 70, height: 30))
-        closeButton.setTitle("Close", for: .normal)
-        closeButton.addTarget(self, action: #selector(handleCloseButton(sender:)), for: .touchUpInside)
-        
-        correctionView.addSubview(dropdown)
-        correctionView.addSubview(closeButton)
-        // Add UIView as a Subview
-        highlightWordViews[sender.row][sender.col].view.superview?.addSubview(correctionView)
     }
     
-    @objc func handleCloseButton(sender: UIButton) {
-        // remove correctionView
-        sender.superview?.removeFromSuperview()
+    @IBAction func cancelSelectedHighlightWord(_ sender: Any) {
         // set border color of clicked word back to red
-        highlightWordViews[selectedHighlightWordRow][selectedHighlightWordCol].view.layer.borderColor = UIColor.red.cgColor
-        // set selectedWord indexes back to default -1
-        selectedHighlightWordRow = -1
-        selectedHighlightWordRow = -1
+        if let selectedWord = selectedHighlightWord {
+            highlightWordViews[selectedWord.0][selectedWord.1].view.layer.borderColor = UIColor.red.cgColor
+            // set selectedWord indexes back to default -1
+            selectedHighlightWord = nil
+        }
     }
+    
+    // MARK: CANDIDATES_PICKER_VIEW METHODS
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return highlightWordViews[selectedHighlightWordRow][selectedHighlightWordCol].word.candidates.count
+        if let selectedWord = selectedHighlightWord {
+            return highlightWordViews[selectedWord.0][selectedWord.1].word.candidates.count
+        } else {
+            return 0
+        }
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return highlightWordViews[selectedHighlightWordRow][selectedHighlightWordCol].word.candidates[row]
+        if let selectedWord = selectedHighlightWord {
+            return highlightWordViews[selectedWord.0][selectedWord.1].word.candidates[row]
+        } else {
+            return nil
+        }
     }
     
 }

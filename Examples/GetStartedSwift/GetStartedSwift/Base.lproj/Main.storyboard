@@ -272,6 +272,51 @@
             <point key="canvasLocation" x="-68.5546875" y="139.23865300146412"/>
         </scene>
         <!--Title-->
+        <scene sceneID="qVO-aS-QbE">
+            <objects>
+                <viewController id="yCs-tV-2E5" customClass="ServerSettingsPropertyViewController" customModule="GetStartedSwift" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="28o-17-ESe"/>
+                        <viewControllerLayoutGuide type="bottom" id="U9H-rm-TFU"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="rKX-Uv-Z5C">
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kd3-jM-oOv">
+                                <rect key="frame" x="52" y="131" width="96" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xZK-aE-hWu">
+                                <rect key="frame" x="176" y="122" width="97" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Title" id="0tf-9v-E15">
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="HuH-ke-sSj">
+                            <connections>
+                                <action selector="save:" destination="yCs-tV-2E5" id="xyw-fl-Lb8"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="label" destination="Kd3-jM-oOv" id="f0X-Ay-gpS"/>
+                        <outlet property="textField" destination="xZK-aE-hWu" id="4FJ-IZ-l5m"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HDl-BH-dL5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-354.4921875" y="-1231.1859443631038"/>
+        </scene>
+        <!--Title-->
         <scene sceneID="Gil-P0-xmV">
             <objects>
                 <viewController id="uca-Y0-z2b" customClass="InjectionCandidateWordViewController" customModule="GetStartedSwift" customModuleProvider="target" sceneMemberID="viewController">
@@ -328,7 +373,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z1f-X6-zuY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1107.2463768115942" y="-807.06521739130437"/>
+            <point key="canvasLocation" x="406" y="-1182"/>
         </scene>
         <!--Title-->
         <scene sceneID="DGc-JR-pOW">
@@ -376,10 +421,13 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="yCs-tV-2E5" kind="show" identifier="serverSettingsPropertySegue" id="mrJ-ez-5bZ"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3he-Yq-Gh3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-168" y="-530"/>
+            <point key="canvasLocation" x="-354" y="-576"/>
         </scene>
         <!--Title-->
         <scene sceneID="LcM-Mx-5dz">

@@ -575,11 +575,18 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     // MARK: Execution of code on server
     
     @IBAction func executeCodeOnServer(_ sender: Any) {
-        let session = NMSSHSession(host: "13.92.131.48", andUsername: "solan1803")
+        let defaults = UserDefaults.standard
+        var serverSettings: Dictionary<String, String> = [:]
+        if let d = defaults.dictionary(forKey: "ServerSettings") {
+            serverSettings = d as! Dictionary<String, String>
+        } else {
+            return
+        }
+        let session = NMSSHSession(host: serverSettings["IP-ADDRESS"], andUsername: serverSettings["Username"])
         session?.connect()
         if (session?.isConnected)! {
             print("Session connected")
-            session?.authenticate(byPassword: "hpcF9jk#E5KVH*MGY6@K")
+            session?.authenticate(byPassword: serverSettings["Password"])
             if (session?.isAuthorized)! {
                 print("Authentication succeeded")
                 do {

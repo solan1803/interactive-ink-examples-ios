@@ -11,12 +11,13 @@ import UIKit
 class SettingsTableViewController: UITableViewController {
     
     var injectionCandidates: Dictionary<String, [String]> = [:]
+    var serverSettings: Dictionary<String, String> = [:]
     
     var selectedCell = -1
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.title = "Settings"
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -31,6 +32,10 @@ class SettingsTableViewController: UITableViewController {
             print(injectionCandidates)
             tableView.reloadData()
         }
+        if let d = defaults.dictionary(forKey: "ServerSettings") {
+            serverSettings = d as! Dictionary<String, String>
+            tableView.reloadData()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -42,28 +47,55 @@ class SettingsTableViewController: UITableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return 2
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "Injection Candidates"
+        case 1:
+            return "Server Settings"
+        default:
+            return ""
+        }
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return injectionCandidates.keys.count
+        switch (section) {
+            case 0: return injectionCandidates.keys.count
+            case 1: return serverSettings.keys.count
+            default: return 0
+        }
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "InjectionCell", for: indexPath)
-
-        let lookFor = Array(injectionCandidates.keys)[indexPath.row]
-        let replaceWith = injectionCandidates[lookFor]
-        cell.textLabel?.text = lookFor
-        cell.detailTextLabel?.text = replaceWith?.joined(separator: " ")
+        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "InjectionCell", for: indexPath)
+        if indexPath.section == 0 {
+            let lookFor = Array(injectionCandidates.keys)[indexPath.row]
+            let replaceWith = injectionCandidates[lookFor]
+            cell.textLabel?.text = lookFor
+            cell.detailTextLabel?.text = replaceWith?.joined(separator: " ")
+        } else if indexPath.section == 1 {
+            // server settings
+            let key = Array(serverSettings.keys)[indexPath.row]
+            let value = serverSettings[key]
+            cell.textLabel?.text = key
+            cell.detailTextLabel?.text = value
+        }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedCell = indexPath.row
-        performSegue(withIdentifier: "injectionCandidateSegue", sender: self)
+        if indexPath.section == 0 {
+            selectedCell = indexPath.row
+            performSegue(withIdentifier: "injectionCandidateSegue", sender: self)
+        } else if indexPath.section == 1 {
+            selectedCell = indexPath.row
+            performSegue(withIdentifier: "serverSettingsPropertySegue", sender: self)
+        }
     }
 
     /*
@@ -112,6 +144,12 @@ class SettingsTableViewController: UITableViewController {
             let icViewController = segue.destination as? InjectionCandidateWordViewController
             icViewController?.lookForText = Array(injectionCandidates.keys)[selectedCell]
             icViewController?.replaceWithText = (injectionCandidates[Array(injectionCandidates.keys)[selectedCell]]?.joined(separator: " "))!
+        } else if (segue.identifier == "serverSettingsPropertySegue" && selectedCell != -1) {
+            let sspViewController = segue.destination as? ServerSettingsPropertyViewController
+            sspViewController?.labelText = Array(serverSettings.keys)[selectedCell]
+            if let value = serverSettings[Array(serverSettings.keys)[selectedCell]] {
+                sspViewController?.textFieldText = value
+            }
         }
         
     }

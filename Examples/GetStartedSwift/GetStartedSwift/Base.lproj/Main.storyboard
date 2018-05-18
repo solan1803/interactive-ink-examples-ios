@@ -247,6 +247,11 @@
                                     <segue destination="sGK-SX-GD8" kind="show" id="Z1v-kp-Fr5"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem title="Execute" id="PPQ-bH-Lfg">
+                                <connections>
+                                    <action selector="executeCodeOnServer:" destination="BYZ-38-t0r" id="iq5-lG-4KD"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>

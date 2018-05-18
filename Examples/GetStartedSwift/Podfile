@@ -6,4 +6,5 @@ target 'GetStartedSwift' do
 
   pod 'MyScriptInteractiveInk-UIReferenceImplementation', :path => '../..'
   pod 'Highlightr'
+  pod 'NMSSH'
 end

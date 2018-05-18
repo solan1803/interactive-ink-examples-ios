@@ -572,6 +572,51 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         }
     }
     
+    // MARK: Execution of code on server
+    
+    @IBAction func executeCodeOnServer(_ sender: Any) {
+        let session = NMSSHSession(host: "13.92.131.48", andUsername: "solan1803")
+        session?.connect()
+        if (session?.isConnected)! {
+            print("Session connected")
+            session?.authenticate(byPassword: "hpcF9jk#E5KVH*MGY6@K")
+            if (session?.isAuthorized)! {
+                print("Authentication succeeded")
+                do {
+                    var outputText = ""
+                    var response = try session?.channel.execute("ls")
+                    if let r = response {
+                        outputText = outputText + "List of Files: \n \(r) \n"
+                    }
+                    // Create test.java file
+                    outputText = outputText + "Creating test.java file \n"
+                    response = try session?.channel.execute("echo \"public class test { \n public static void main(String[] args) { \n System.out.println(\\\"Hello World, from GetStartedSwift\\\"); \n } \n }\" > test.java")
+                    if let r = response {
+                        outputText = outputText + "Creating test.java: \n \(r) \n"
+                    }
+                    // Compile test.java
+                    outputText = outputText + "Compiling test.java \n"
+                    var err : NSError?
+                    response = session?.channel.execute("javac test.java", error: &err, timeout: 10)
+                    if let error = err {
+                        outputText = outputText + "Error: \n \(error.localizedDescription) \n"
+                    }
+                    if let r = response {
+                        outputText = outputText + "\(r) \n"
+                    }
+                    // Run test.java
+                    response = try session?.channel.execute("java test")
+                    if let r = response {
+                        outputText = outputText + "Running test.java \n \(r) \n"
+                    }
+                    outputTextField.text = outputText
+                } catch {
+                    print(error)
+                }
+            }
+        }
+        session?.disconnect()
+    }
 }
 
 public class HighlightWordTapGestureRecognizer: UITapGestureRecognizer {

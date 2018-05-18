@@ -5,3 +5,5 @@
 #import <iink/IINK.h>
 #import <IInkUIReferenceImplementation/IInkUIReferenceImplementation.h>
 #import "MyCertificate.h"
+#import <Foundation/Foundation.h>
+#import <NMSSH/NMSSH.h>

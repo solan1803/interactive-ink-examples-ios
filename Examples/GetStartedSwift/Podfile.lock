@@ -3,15 +3,18 @@ PODS:
   - MyScriptInteractiveInk-Runtime (1.1.2)
   - MyScriptInteractiveInk-UIReferenceImplementation (1.1.2):
     - MyScriptInteractiveInk-Runtime (~> 1.1.2)
+  - NMSSH (2.2.8)
 
 DEPENDENCIES:
   - Highlightr
   - MyScriptInteractiveInk-UIReferenceImplementation (from `../..`)
+  - NMSSH
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Highlightr
     - MyScriptInteractiveInk-Runtime
+    - NMSSH
 
 EXTERNAL SOURCES:
   MyScriptInteractiveInk-UIReferenceImplementation:
@@ -21,7 +24,8 @@ SPEC CHECKSUMS:
   Highlightr: 65655134dd0d5e1320afdd8a9d880c9e9dc0b437
   MyScriptInteractiveInk-Runtime: 473fd867a34fe659c4f076052435bd887db42bfa
   MyScriptInteractiveInk-UIReferenceImplementation: 20f34d04ac8b3aa2b26bcf857369224299420b9b
+  NMSSH: b722885a07485a2c03ffa3ea56a7b0308dbdc37c
 
-PODFILE CHECKSUM: 8db44309368afb935a97fb676ba8553360199b0f
+PODFILE CHECKSUM: 394343dbcea38710575c3fb5f7173b54b010b1fd
 
 COCOAPODS: 1.5.2

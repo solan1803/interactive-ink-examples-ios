@@ -575,6 +575,28 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     // MARK: Execution of code on server
     
     @IBAction func executeCodeOnServer(_ sender: Any) {
+        // Create code file to be sent to server
+        var codeString = "public class JavaTest { \n"
+        for eachLine in wordsList {
+            for w in eachLine {
+                codeString = codeString + w.label + " "
+            }
+            codeString = codeString + "\n"
+        }
+        codeString = codeString + "}"
+        print(codeString)
+        
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        do {
+            // Store code file in a subdirectory
+            try? FileManager.default.createDirectory(atPath: documentsURL.appendingPathComponent("CodeFiles").path, withIntermediateDirectories: true)
+            try codeString.write(to: documentsURL.appendingPathComponent("CodeFiles").appendingPathComponent("JavaTest.java"), atomically: false, encoding: String.Encoding.utf8)
+        } catch {
+            print("Error trying to write file \(error.localizedDescription)")
+        }
+        
+        // Retrieve Server Settings
         let defaults = UserDefaults.standard
         var serverSettings: Dictionary<String, String> = [:]
         if let d = defaults.dictionary(forKey: "ServerSettings") {
@@ -582,48 +604,44 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         } else {
             return
         }
+        // Start SSH session and transfer codefile through SFTP
+        var outputText = ""
         let session = NMSSHSession(host: serverSettings["IP-ADDRESS"], andUsername: serverSettings["Username"])
         session?.connect()
         if (session?.isConnected)! {
-            print("Session connected")
+            outputText = outputText + "Session connected \n"
             session?.authenticate(byPassword: serverSettings["Password"])
             if (session?.isAuthorized)! {
-                print("Authentication succeeded")
-                do {
-                    var outputText = ""
-                    var response = try session?.channel.execute("ls")
-                    if let r = response {
-                        outputText = outputText + "List of Files: \n \(r) \n"
-                    }
-                    // Create test.java file
-                    outputText = outputText + "Creating test.java file \n"
-                    response = try session?.channel.execute("echo \"public class test { \n public static void main(String[] args) { \n System.out.println(\\\"Hello World, from GetStartedSwift\\\"); \n } \n }\" > test.java")
-                    if let r = response {
-                        outputText = outputText + "Creating test.java: \n \(r) \n"
-                    }
-                    // Compile test.java
-                    outputText = outputText + "Compiling test.java \n"
-                    var err : NSError?
-                    response = session?.channel.execute("javac test.java", error: &err, timeout: 10)
-                    if let error = err {
-                        outputText = outputText + "Error: \n \(error.localizedDescription) \n"
-                    }
-                    if let r = response {
+                outputText = outputText + "Authentication succeeded \n"
+                session?.sftp.connect()
+                if (session?.sftp.isConnected)! {
+                    outputText = outputText + "SFTP connected \n"
+                    let writeSuccess = session?.sftp.writeFile(atPath: documentsURL.appendingPathComponent("CodeFiles").appendingPathComponent("JavaTest.java").path, toFileAtPath: "JavaTest.java")
+                    outputText = outputText + "Copy codefile: \(writeSuccess!) \n"
+                }
+                session?.sftp.disconnect()
+                // Compile JavaTest.java
+                outputText = outputText + "Compiling JavaTest.java \n"
+                // Errors from compiling are redirected from stderr to stdout so that we dont have to wait for the error object to populate.
+                var response = session?.channel.execute("javac JavaTest.java 2>&1", error: nil, timeout: 50)
+                if let r = response {
+                    if (r == "") {
+                        outputText = outputText + "Compilation succeeded! \n"
+                        response = session?.channel.execute("java JavaTest", error: nil, timeout: 50)
+                        outputText = outputText + "Running... \n"
+                        outputText = outputText + "Output: \(response ?? "")"
+                    } else {
+                        // Print compilation errors
                         outputText = outputText + "\(r) \n"
                     }
-                    // Run test.java
-                    response = try session?.channel.execute("java test")
-                    if let r = response {
-                        outputText = outputText + "Running test.java \n \(r) \n"
-                    }
-                    outputTextField.text = outputText
-                } catch {
-                    print(error)
                 }
+                outputTextField.text = outputText
             }
         }
         session?.disconnect()
     }
+    
+    
 }
 
 public class HighlightWordTapGestureRecognizer: UITapGestureRecognizer {

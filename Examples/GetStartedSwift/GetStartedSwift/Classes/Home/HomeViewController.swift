@@ -489,7 +489,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     @IBAction func addHighlightViews(_ sender: Any) {
-        syntaxHighlight()
         if highlightSwitch.isOn {
             for (lineIndex, line) in wordsList.enumerated() {
                 var lineOfHighlightedWords: [HighlightWordView] = []
@@ -522,15 +521,16 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             selectedHighlightWord = nil
             highlightWordViews = []
         }
+        syntaxHighlight()
     }
     
     func syntaxHighlight() {
         let highlightr = Highlightr()
         highlightr?.setTheme(to: "paraiso-dark")
         var code = ""
-        for eachLine in wordsList {
-            for w in eachLine {
-                code = code + "\(w.label) "
+        for eachLine in highlightWordViews {
+            for hwv in eachLine {
+                code = code + "\(hwv.word.label) "
             }
             code = code + "\n"
         }
@@ -544,6 +544,28 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         selectedHighlightWord = (sender.row, sender.col)
         // when tap on highlightword, change border color to blue to indicate to the user that they have clicked on it.
         highlightWordViews[sender.row][sender.col].view.layer.borderColor = UIColor.blue.cgColor
+    }
+    
+    @IBAction func saveHighlightWordChanges(_ sender: Any) {
+        if let selectedWord = selectedHighlightWord {
+            // if 'other' textfield is not empty then replace label with this
+            // else replace label with candidatePicker
+            let w = highlightWordViews[selectedWord.0][selectedWord.1].word
+            w.fixProvider = FixProvider.UserFix(w.label)
+            let otherField = otherTextField.text
+            if otherField != "" {
+                w.label = otherField!
+            } else {
+                let selectedRow = candidatesPickerView.selectedRow(inComponent: 0)
+                w.label = w.candidates[selectedRow]
+            }
+            highlightWordViews[selectedWord.0][selectedWord.1].view.backgroundColor = UIColor.orange
+            // Reset bottom right UI and also force set border color to blue
+            selectedHighlightWord = selectedWord
+            highlightWordViews[selectedWord.0][selectedWord.1].view.layer.borderColor = UIColor.blue.cgColor
+            // Update syntaxHighlighted code for change.
+            syntaxHighlight()
+        }
     }
     
     @IBAction func cancelSelectedHighlightWord(_ sender: Any) {

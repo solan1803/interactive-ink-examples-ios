@@ -134,6 +134,9 @@
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RXy-HM-Pz9">
                                                         <rect key="frame" x="142.5" y="0.0" width="57" height="31"/>
                                                         <state key="normal" title="Save Fix"/>
+                                                        <connections>
+                                                            <action selector="saveHighlightWordChanges:" destination="BYZ-38-t0r" eventType="touchUpInside" id="j0b-ka-vuf"/>
+                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1wZ-Ts-ho9">
                                                         <rect key="frame" x="209.5" y="0.0" width="48" height="31"/>

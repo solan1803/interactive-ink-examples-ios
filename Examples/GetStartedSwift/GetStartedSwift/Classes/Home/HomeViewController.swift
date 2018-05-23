@@ -474,6 +474,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                         annotation = "Annotation: ANTLR fix from \(s) to \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
                     }
                     annotationLabel.text = annotation
+                } else {
+                    annotationLabel.text = "Annotation: "
                 }
                 candidatesPickerView.reloadAllComponents()
             } else {

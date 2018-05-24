@@ -137,6 +137,11 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         
         candidatesPickerView.delegate = self
         candidatesPickerView.dataSource = self
+        
+        // print a line of code
+//        let codeString = "public static void main(String[] args) { \nSystem.out.println(test); \n}"
+//        generateHandwritingFromString(forCode: codeString)
+        
     }
     
     // MARK: - Create package
@@ -665,6 +670,68 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         session?.disconnect()
     }
     
+    // MARK: GENERATE STROKES PROGRAMATICALLY
+    
+    func generateHandwritingFromString(forCode code: String) {
+        var prevChar = ""
+        var h_spacing = 0.0
+        var v_spacing = 0.0
+        for (cIndex, character) in code.enumerated() {
+            if cIndex > 0 && prevChar != " " && prevChar != "\n" {
+                h_spacing = h_spacing + HANDWRITTEN_CHARACTERS[prevChar]!.getWidth()-1.4
+            } else if prevChar == " " {
+                h_spacing = h_spacing + 4
+            } else if prevChar == "\n" {
+                v_spacing = v_spacing + 48
+                h_spacing = 0.0
+            }
+            if character != " " && character != "\n" {
+                for stroke in 0..<HANDWRITTEN_CHARACTERS[String(character)]!.getXArrays().count {
+                    if let mCount = HANDWRITTEN_CHARACTERS[String(character)]?.getXArrays()[stroke].count, let xArray = HANDWRITTEN_CHARACTERS[String(character)]?.getXArrays()[stroke],
+                        let yArray = HANDWRITTEN_CHARACTERS[String(character)]?.getYArrays()[stroke], let forcesArray = HANDWRITTEN_CHARACTERS[String(character)]?.getForceArrays()[stroke] {
+                        for i in 0..<mCount {
+                            if i == 0 {
+                                // pen down
+                                editorViewController.editor.pointerDown(CGPoint(x: xArray[i]*5.2 + h_spacing*5.2, y: yArray[i]*5.2 + v_spacing), at: -1, force: Float(forcesArray[i]), type: IINKPointerType.pen, pointerId: -1, error: nil)
+                            } else if i == forcesArray.count - 1 {
+                                // pen up
+                                try! editorViewController.editor.pointerUp(CGPoint(x: xArray[i]*5.2 + h_spacing*5.2, y: yArray[i]*5.2 + v_spacing), at: -1, force: Float(forcesArray[i]), type: IINKPointerType.pen, pointerId: -1)
+                            } else {
+                                // pen move
+                                try! editorViewController.editor.pointerMove(CGPoint(x: xArray[i]*5.2 + h_spacing*5.2, y: yArray[i]*5.2 + v_spacing), at: -1, force: Float(forcesArray[i]), type: IINKPointerType.pen, pointerId: -1)
+                            }
+                        }
+                    }
+                }
+            }
+            prevChar = String(character)
+        }
+    }
+    
+    func generateHandwritingOnSeparateLinesFromCharArray(array: [String]) {
+        var yOffset = 48.0
+        for (index, character) in array.enumerated() {
+            for stroke in 0..<HANDWRITTEN_CHARACTERS[character]!.getXArrays().count {
+                if let mCount = HANDWRITTEN_CHARACTERS[character]?.getXArrays()[stroke].count, let xArray = HANDWRITTEN_CHARACTERS[character]?.getXArrays()[stroke],
+                    let yArray = HANDWRITTEN_CHARACTERS[character]?.getYArrays()[stroke], let forcesArray = HANDWRITTEN_CHARACTERS[character]?.getForceArrays()[stroke] {
+                    yOffset = Double((index + 1)*48)
+                    for i in 0..<mCount {
+                        if i == 0 {
+                            // pen down
+                            editorViewController.editor.pointerDown(CGPoint(x: xArray[i]*5.2, y: yArray[i]*5.2 + yOffset), at: -1, force: Float(forcesArray[i]), type: IINKPointerType.pen, pointerId: -1, error: nil)
+                        } else if i == forcesArray.count - 1 {
+                            // pen up
+                            try! editorViewController.editor.pointerUp(CGPoint(x: xArray[i]*5.2, y: yArray[i]*5.2 + yOffset), at: -1, force: Float(forcesArray[i]), type: IINKPointerType.pen, pointerId: -1)
+                        } else {
+                            // pen move
+                            try! editorViewController.editor.pointerMove(CGPoint(x: xArray[i]*5.2, y: yArray[i]*5.2 + yOffset), at: -1, force: Float(forcesArray[i]), type: IINKPointerType.pen, pointerId: -1)
+                        }
+                    }
+                }
+            }
+        }
+
+    }
     
 }
 

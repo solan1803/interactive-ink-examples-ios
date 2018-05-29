@@ -139,7 +139,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         candidatesPickerView.dataSource = self
         
         // print a line of code
-//        let codeString = "public static void main(String[] args) { \nSystem.out.println(test); \n}"
+//        let codeString = "public static void main(String[] args) { \nSystem.out.println(\"test\"); \n}"
 //        generateHandwritingFromString(forCode: codeString)
         
     }

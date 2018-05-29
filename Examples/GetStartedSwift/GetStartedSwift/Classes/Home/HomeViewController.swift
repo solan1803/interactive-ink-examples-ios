@@ -12,7 +12,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     private var contentPackage: IINKContentPackage? = nil
     
-    private var documentTitleText: String = "" {
+    var documentTitleText: String = "New" {
         didSet {
             documentTitleButton.setTitle(documentTitleText, for: UIControlState.normal)
             self.title = documentTitleText
@@ -123,7 +123,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         inputTypeSegmentedControl.selectedSegmentIndex = Int(editorViewController.inputMode.rawValue)
 
         do {
-            if let package = try createPackage(packageName: "New") {
+            if let package = try createPackage(packageName: documentTitleText) {
                 contentPackage = package
                 try editorViewController.editor.part = package.getPartAt(0)
             }
@@ -378,6 +378,10 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 let output = convertButtonWasTouchedUpInside()
                 if let covc = segue.destination as? ConvertedOutputViewController {
                     covc.convertedText = output
+                }
+            case "settingsSegue":
+                if let settingsController = segue.destination as? SettingsTableViewController {
+                    settingsController.filename = documentTitleText
                 }
             default: break
             }

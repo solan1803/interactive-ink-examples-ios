@@ -71,7 +71,7 @@ class LoadFilesTableViewController: UITableViewController {
             if let hvc = navController.viewControllers[navController.viewControllers.count - 2] as? HomeViewController {
                 let filePath = String(describing: fileURLs[indexPath.row])
                 let range = filePath.index(filePath.startIndex, offsetBy:15)
-                hvc.loadContent(withFileURL: String(filePath[range...]))
+                hvc.loadContent(withFileURL: String(filePath[range...]).removingPercentEncoding!)
             }
             navController.popViewController(animated: true)
         }

@@ -34,6 +34,10 @@
 		E0931B80203B462600B84863 /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = E0931B7C203B462600B84863 /* MyCertificate.c */; };
 		E0931B83203C40C900B84863 /* Java9PrintRulesWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0931B82203C40C900B84863 /* Java9PrintRulesWalker.swift */; };
 		E0931B8A203C91EF00B84863 /* ConvertedOutputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0931B89203C91EF00B84863 /* ConvertedOutputViewController.swift */; };
+		E0BB377520BD625D0041E75A /* LeetCodeChooseQuestionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BB377420BD625D0041E75A /* LeetCodeChooseQuestionTableViewController.swift */; };
+		E0BB377A20BD628A0041E75A /* LeetCodeDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BB377920BD628A0041E75A /* LeetCodeDataSet.swift */; };
+		E0BB377C20BD649D0041E75A /* LeetCodeQuestionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BB377B20BD649D0041E75A /* LeetCodeQuestionTableViewCell.swift */; };
+		E0BB378020BDA75B0041E75A /* LeetCodeQuestionTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0BB377F20BDA75B0041E75A /* LeetCodeQuestionTableViewCell.xib */; };
 		E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */; };
 		E0E7C6E920A83BB000E87D07 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E7C6E820A83BB000E87D07 /* SettingsTableViewController.swift */; };
 		E0E7C6EB20A8C19E00E87D07 /* InjectionCandidateWordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E7C6EA20A8C19E00E87D07 /* InjectionCandidateWordViewController.swift */; };
@@ -117,6 +121,10 @@
 		E0931B7C203B462600B84863 /* MyCertificate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MyCertificate.c; sourceTree = "<group>"; };
 		E0931B82203C40C900B84863 /* Java9PrintRulesWalker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Java9PrintRulesWalker.swift; sourceTree = "<group>"; };
 		E0931B89203C91EF00B84863 /* ConvertedOutputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertedOutputViewController.swift; sourceTree = "<group>"; };
+		E0BB377420BD625D0041E75A /* LeetCodeChooseQuestionTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeChooseQuestionTableViewController.swift; sourceTree = "<group>"; };
+		E0BB377920BD628A0041E75A /* LeetCodeDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeDataSet.swift; sourceTree = "<group>"; };
+		E0BB377B20BD649D0041E75A /* LeetCodeQuestionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeQuestionTableViewCell.swift; sourceTree = "<group>"; };
+		E0BB377F20BDA75B0041E75A /* LeetCodeQuestionTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LeetCodeQuestionTableViewCell.xib; sourceTree = "<group>"; };
 		E0BB547C2038C84200F688B5 /* LoadFilesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFilesTableViewController.swift; sourceTree = "<group>"; };
 		E0E7C6E820A83BB000E87D07 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		E0E7C6EA20A8C19E00E87D07 /* InjectionCandidateWordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionCandidateWordViewController.swift; sourceTree = "<group>"; };
@@ -202,6 +210,10 @@
 				E0931B89203C91EF00B84863 /* ConvertedOutputViewController.swift */,
 				E0E7C6EA20A8C19E00E87D07 /* InjectionCandidateWordViewController.swift */,
 				E0E7C72020AEDE3B00E87D07 /* ServerSettingsPropertyViewController.swift */,
+				E0BB377420BD625D0041E75A /* LeetCodeChooseQuestionTableViewController.swift */,
+				E0BB377920BD628A0041E75A /* LeetCodeDataSet.swift */,
+				E0BB377B20BD649D0041E75A /* LeetCodeQuestionTableViewCell.swift */,
+				E0BB377F20BDA75B0041E75A /* LeetCodeQuestionTableViewCell.xib */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -375,6 +387,7 @@
 				55BCF1021F4746A80065868A /* Assets.xcassets in Resources */,
 				E084DF422030541500C32ECC /* Java9.interp in Resources */,
 				E084DF492030541500C32ECC /* Java9.tokens in Resources */,
+				E0BB378020BDA75B0041E75A /* LeetCodeQuestionTableViewCell.xib in Resources */,
 				554A0B761F4745DF00C30FE6 /* Main.storyboard in Resources */,
 				E084DF482030541500C32ECC /* Java9Lexer.tokens in Resources */,
 				E084DF412030541500C32ECC /* Java9Lexer.interp in Resources */,
@@ -960,6 +973,7 @@
 				E084DF3E2030541500C32ECC /* Java9Parser.swift in Sources */,
 				E0931B80203B462600B84863 /* MyCertificate.c in Sources */,
 				E084DF3F2030541500C32ECC /* Java9LexerATN.swift in Sources */,
+				E0BB377520BD625D0041E75A /* LeetCodeChooseQuestionTableViewController.swift in Sources */,
 				E084DF462030541500C32ECC /* Java9Lexer.swift in Sources */,
 				E084DF472030541500C32ECC /* Java9Listener.swift in Sources */,
 				E03167C420B5ABE100620FED /* DataSet.swift in Sources */,
@@ -968,6 +982,8 @@
 				E084DF402030541500C32ECC /* Java9ParserATN.swift in Sources */,
 				E0931B83203C40C900B84863 /* Java9PrintRulesWalker.swift in Sources */,
 				E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */,
+				E0BB377C20BD649D0041E75A /* LeetCodeQuestionTableViewCell.swift in Sources */,
+				E0BB377A20BD628A0041E75A /* LeetCodeDataSet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="kre-ln-OIM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="O9D-hO-iAc">
     <device id="ipad12_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -11,24 +11,83 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
-        <scene sceneID="7c3-GH-Nma">
+        <!--View Controller-->
+        <scene sceneID="bcR-gr-jVU">
             <objects>
-                <navigationController id="kre-ln-OIM" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="DiD-pu-efw">
-                        <rect key="frame" x="0.0" y="20" width="1024" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="XAi-XW-t3i">
-                        <autoresizingMask key="autoresizingMask"/>
-                    </toolbar>
-                    <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="xwz-ls-VDF"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6iK-5u-Pdb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController id="4S3-lc-aeD" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="sFN-jW-QdQ"/>
+                        <viewControllerLayoutGuide type="bottom" id="7pY-CX-brG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Zmt-NZ-h1q">
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="Hgj-Wa-pzE">
+                                <rect key="frame" x="163" y="363.5" width="698" height="640"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8p9-nC-2Nq">
+                                        <rect key="frame" x="9" y="0.0" width="680" height="145"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="680" id="Fpw-Pi-tc5"/>
+                                            <constraint firstAttribute="height" constant="145" id="i27-Z2-hZE"/>
+                                        </constraints>
+                                        <state key="normal" title="Leetcode" image="leetcode"/>
+                                        <connections>
+                                            <segue destination="H87-bS-xg9" kind="show" id="Ywf-LU-13k"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zNM-Ec-a0C">
+                                        <rect key="frame" x="51.5" y="185" width="595" height="120"/>
+                                        <state key="normal" title="InterviewBit" image="interviewbit"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fh2-jz-QYY">
+                                        <rect key="frame" x="0.0" y="345" width="698" height="159"/>
+                                        <state key="normal" title="HackerRank" image="hackerrank"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CMh-B1-cIv">
+                                        <rect key="frame" x="233" y="544" width="232" height="96"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="70"/>
+                                        <state key="normal" title="Custom"/>
+                                        <connections>
+                                            <segue destination="BYZ-38-t0r" kind="show" id="1Kf-3W-YiB"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Hgj-Wa-pzE" firstAttribute="centerX" secondItem="Zmt-NZ-h1q" secondAttribute="centerX" id="5So-I3-R26"/>
+                            <constraint firstItem="Hgj-Wa-pzE" firstAttribute="centerY" secondItem="Zmt-NZ-h1q" secondAttribute="centerY" id="6pb-ov-VYP"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="whd-yM-R92"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EwH-Ga-r1N" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-917" y="140"/>
+            <point key="canvasLocation" x="-1201" y="141"/>
+        </scene>
+        <!--Leet Code Choose Question Table View Controller-->
+        <scene sceneID="rUF-no-XtF">
+            <objects>
+                <tableViewController id="H87-bS-xg9" customClass="LeetCodeChooseQuestionTableViewController" customModule="GetStartedSwift" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="nGm-2U-K2c">
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <connections>
+                            <outlet property="dataSource" destination="H87-bS-xg9" id="jLP-YC-Ccr"/>
+                            <outlet property="delegate" destination="H87-bS-xg9" id="gQM-IQ-8F7"/>
+                        </connections>
+                    </tableView>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="choosenLeetCodeQuestionSegue" id="Ce0-2L-EQp"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eO9-mb-nkP" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-840.234375" y="897.80380673499258"/>
         </scene>
         <!--File - Type-->
         <scene sceneID="tne-QT-ifu">
@@ -247,12 +306,12 @@
                             </barButtonItem>
                             <barButtonItem title="Settings" id="Rnr-Bx-gS1">
                                 <connections>
-                                    <segue destination="sGK-SX-GD8" kind="show" id="Z1v-kp-Fr5"/>
+                                    <segue destination="sGK-SX-GD8" kind="show" identifier="settingsSegue" id="Z1v-kp-Fr5"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem title="Execute" id="PPQ-bH-Lfg">
                                 <connections>
-                                    <action selector="executeCodeOnServer:" destination="BYZ-38-t0r" id="iq5-lG-4KD"/>
+                                    <action selector="executeCode:" destination="BYZ-38-t0r" id="eYD-KR-wFV"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
@@ -272,7 +331,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-68.5546875" y="139.23865300146412"/>
+            <point key="canvasLocation" x="55.664062499999993" y="139.23865300146412"/>
         </scene>
         <!--Title-->
         <scene sceneID="qVO-aS-QbE">
@@ -430,7 +489,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3he-Yq-Gh3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-354" y="-576"/>
+            <point key="canvasLocation" x="-354.4921875" y="-576.28111273792092"/>
         </scene>
         <!--Title-->
         <scene sceneID="LcM-Mx-5dz">
@@ -482,7 +541,7 @@
                 <viewController id="TpP-KV-udZ" customClass="EditorViewController" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fSL-LO-Gn2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="735" y="141"/>
+            <point key="canvasLocation" x="858.984375" y="140.99560761346999"/>
         </scene>
         <!--Converted Output View Controller-->
         <scene sceneID="dpe-9y-mst">
@@ -520,10 +579,34 @@
             </objects>
             <point key="canvasLocation" x="786.95652173913049" y="782.60869565217399"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="a8q-ER-zLg">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="O9D-hO-iAc" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="D8d-ih-BJd">
+                        <rect key="frame" x="0.0" y="20" width="1024" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="4S3-lc-aeD" kind="relationship" relationship="rootViewController" id="yvM-gu-n2J"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7AV-yG-VF1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1947" y="139"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Clear" width="18" height="25"/>
         <image name="Redo" width="24" height="24"/>
         <image name="Undo" width="24" height="24"/>
+        <image name="hackerrank" width="600" height="159"/>
+        <image name="interviewbit" width="500" height="120"/>
+        <image name="leetcode" width="1360" height="291"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="Ce0-2L-EQp"/>
+    </inferredMetricsTieBreakers>
 </document>

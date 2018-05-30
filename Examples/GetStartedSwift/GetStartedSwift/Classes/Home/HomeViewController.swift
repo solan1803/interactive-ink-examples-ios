@@ -12,7 +12,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     private var contentPackage: IINKContentPackage? = nil
     
-    private var documentTitleText: String = "" {
+    var documentTitleText: String = "New" {
         didSet {
             documentTitleButton.setTitle(documentTitleText, for: UIControlState.normal)
             self.title = documentTitleText
@@ -123,7 +123,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         inputTypeSegmentedControl.selectedSegmentIndex = Int(editorViewController.inputMode.rawValue)
 
         do {
-            if let package = try createPackage(packageName: "New") {
+            if let package = try createPackage(packageName: documentTitleText) {
                 contentPackage = package
                 try editorViewController.editor.part = package.getPartAt(0)
             }
@@ -379,6 +379,10 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 if let covc = segue.destination as? ConvertedOutputViewController {
                     covc.convertedText = output
                 }
+            case "settingsSegue":
+                if let settingsController = segue.destination as? SettingsTableViewController {
+                    settingsController.filename = documentTitleText
+                }
             default: break
             }
         }
@@ -534,12 +538,34 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     func syntaxHighlight() {
         let highlightr = Highlightr()
         highlightr?.setTheme(to: "paraiso-dark")
-        var code = ""
+        var codeBody = ""
         for eachLine in highlightWordViews {
             for hwv in eachLine {
-                code = code + "\(hwv.word.label) "
+                codeBody = codeBody + "\(hwv.word.label) "
             }
-            code = code + "\n"
+            codeBody = codeBody + "\n"
+        }
+        // check type (leetcode or custom)
+        var type = "custom" // default to custom
+        let defaults = UserDefaults.standard
+        if let d = defaults.dictionary(forKey: "FileSettings") {
+            var allFileSettings = d as! Dictionary<String, Dictionary<String, String>>
+            if let fs = allFileSettings[documentTitleText] {
+                type = fs["type"]!
+            }
+        }
+        var code = ""
+        if type == "custom" {
+            code = codeBody
+        } else if type == "leetcode" {
+            if let d = defaults.dictionary(forKey: "FileSettings") {
+                var allFileSettings = d as! Dictionary<String, Dictionary<String, String>>
+                if let fs = allFileSettings[documentTitleText] {
+                    let id = fs["id"]!
+                    let index = Int(id)! - 1
+                    code = LEETCODE_DATA[index][6] + codeBody + LEETCODE_DATA[index][7]
+                }
+            }
         }
         // You can omit the second parameter to use automatic language detection.
         let highlightedCode = highlightr?.highlight(code, as: "java")
@@ -601,73 +627,30 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         }
     }
     
-    // MARK: Execution of code on server
-    
-    @IBAction func executeCodeOnServer(_ sender: Any) {
-        // Create code file to be sent to server
-        var codeString = "public class JavaTest { \n"
+    @IBAction func executeCode(_ sender: UIBarButtonItem) {
+        // First check type of file (leetcode or custom)
+        let defaults = UserDefaults.standard
+        var type = "custom" // default to custom
+        if let d = defaults.dictionary(forKey: "FileSettings") {
+            var allFileSettings = d as! Dictionary<String, Dictionary<String, String>>
+            if let fs = allFileSettings[documentTitleText] {
+                type = fs["type"]!
+            }
+        }
+        // Join together final string to represent code
+        var codeString = ""
         for eachLine in wordsList {
             for w in eachLine {
                 codeString = codeString + w.label + " "
             }
             codeString = codeString + "\n"
         }
-        codeString = codeString + "}"
-        print(codeString)
-        
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        do {
-            // Store code file in a subdirectory
-            try? FileManager.default.createDirectory(atPath: documentsURL.appendingPathComponent("CodeFiles").path, withIntermediateDirectories: true)
-            try codeString.write(to: documentsURL.appendingPathComponent("CodeFiles").appendingPathComponent("JavaTest.java"), atomically: false, encoding: String.Encoding.utf8)
-        } catch {
-            print("Error trying to write file \(error.localizedDescription)")
+        // Handover execution to specific functinos
+        if type == "custom" {
+            outputTextField.text = executeCodeOnServer(codeBody: codeString)
+        } else if type == "leetcode" {
+            executeCodeOnLeetCode(codeBody: codeString, filename: documentTitleText, outputTextField: outputTextField)
         }
-        
-        // Retrieve Server Settings
-        let defaults = UserDefaults.standard
-        var serverSettings: Dictionary<String, String> = [:]
-        if let d = defaults.dictionary(forKey: "ServerSettings") {
-            serverSettings = d as! Dictionary<String, String>
-        } else {
-            return
-        }
-        // Start SSH session and transfer codefile through SFTP
-        var outputText = ""
-        let session = NMSSHSession(host: serverSettings["IP-ADDRESS"], andUsername: serverSettings["Username"])
-        session?.connect()
-        if (session?.isConnected)! {
-            outputText = outputText + "Session connected \n"
-            session?.authenticate(byPassword: serverSettings["Password"])
-            if (session?.isAuthorized)! {
-                outputText = outputText + "Authentication succeeded \n"
-                session?.sftp.connect()
-                if (session?.sftp.isConnected)! {
-                    outputText = outputText + "SFTP connected \n"
-                    let writeSuccess = session?.sftp.writeFile(atPath: documentsURL.appendingPathComponent("CodeFiles").appendingPathComponent("JavaTest.java").path, toFileAtPath: "JavaTest.java")
-                    outputText = outputText + "Copy codefile: \(writeSuccess!) \n"
-                }
-                session?.sftp.disconnect()
-                // Compile JavaTest.java
-                outputText = outputText + "Compiling JavaTest.java \n"
-                // Errors from compiling are redirected from stderr to stdout so that we dont have to wait for the error object to populate.
-                var response = session?.channel.execute("javac JavaTest.java 2>&1", error: nil, timeout: 50)
-                if let r = response {
-                    if (r == "") {
-                        outputText = outputText + "Compilation succeeded! \n"
-                        response = session?.channel.execute("java JavaTest", error: nil, timeout: 50)
-                        outputText = outputText + "Running... \n"
-                        outputText = outputText + "Output: \(response ?? "")"
-                    } else {
-                        // Print compilation errors
-                        outputText = outputText + "\(r) \n"
-                    }
-                }
-                outputTextField.text = outputText
-            }
-        }
-        session?.disconnect()
     }
     
     // MARK: GENERATE STROKES PROGRAMATICALLY

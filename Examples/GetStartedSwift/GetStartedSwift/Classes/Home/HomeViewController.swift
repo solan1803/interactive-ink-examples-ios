@@ -299,7 +299,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 }
                 if potentialFixes == 1 {
                     errorsMessage += "Replaced \(eachLine[indexOfWordFix].label) with \(candidateFix) \n"
-                    eachLine[indexOfWordFix].fixProvider = FixProvider.PreprocessingFix(eachLine[indexOfWordFix].label)
+                    eachLine[indexOfWordFix].fixProviders.append(FixProvider.BracketsMismatchingFix(eachLine[indexOfWordFix].label))
                     eachLine[indexOfWordFix].label = candidateFix
                 }
             }
@@ -324,7 +324,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 }
                 if potentialFixes == 1 {
                     errorsMessage += "Replaced \(eachLine[indexOfWordFix].label) with \(candidateFix) \n"
-                    eachLine[indexOfWordFix].fixProvider = FixProvider.PreprocessingFix(eachLine[indexOfWordFix].label)
+                    eachLine[indexOfWordFix].fixProviders.append(FixProvider.BracketsMismatchingFix(eachLine[indexOfWordFix].label))
                     eachLine[indexOfWordFix].label = candidateFix
                 }
             }
@@ -345,7 +345,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 if eachLine.count == 1 && eachLine.last?.label.count == 1 && eachLine.last?.label != "}" {
                     // If there is only one character on the line it has to be }
                     preprocessMessage += "Line \(index) - If only one character on line then has to be } \n"
-                    eachLine.last?.fixProvider = FixProvider.PreprocessingFix((eachLine.last?.label)!)
+                    eachLine.last?.fixProviders.append(FixProvider.HeuristicsFix((eachLine.last?.label)!))
                     eachLine.last?.label = "}"
                 } else {
                     // Loop through candidates and see if { or ; comes first and use this as label
@@ -353,7 +353,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     for c in (eachLine.last?.candidates)! {
                         if c == "{" || c == ";" {
                             preprocessMessage += "Line \(index) - Fix last character should be '{' or ';', we made it \(c) \n"
-                            eachLine.last?.fixProvider = FixProvider.PreprocessingFix((eachLine.last?.label)!)
+                            eachLine.last?.fixProviders.append(FixProvider.HeuristicsFix((eachLine.last?.label)!))
                             eachLine.last?.label = c
                             fixed = true
                             break
@@ -470,22 +470,38 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             if let newSelected = selectedHighlightWord {
                 // update bottom right UI of screen
                 wordLabel.text = "Label: \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
-                if let fixProvider = highlightWordViews[newSelected.0][newSelected.1].word.fixProvider {
-                    var annotation = ""
-                    switch (fixProvider) {
-                    case .UserFix(let s):
-                        annotation = "Annotation: UserFix from \(s) to \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
-                    case.PreprocessingFix(let s):
-                        annotation = "Annotation: Preprocesssing fix from \(s) to \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
-                    case .MachineLayerFix(let s):
-                        annotation = "Annotation: ML fix from \(s) to \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
-                    case .ANTLRFix(let s):
-                        annotation = "Annotation: ANTLR fix from \(s) to \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
+                var annotation = "Annotation: "
+                for (fIndex, fix) in highlightWordViews[newSelected.0][newSelected.1].word.fixProviders.enumerated() {
+                    var toLabel = highlightWordViews[newSelected.0][newSelected.1].word.label
+                    if (fIndex != highlightWordViews[newSelected.0][newSelected.1].word.fixProviders.count-1) {
+                        let nextFix = highlightWordViews[newSelected.0][newSelected.1].word.fixProviders[fIndex + 1]
+                        switch (nextFix) {
+                        case .BracketsMismatchingFix(let s):
+                            toLabel = s
+                        case .HeuristicsFix(let s):
+                            toLabel = s
+                        case .ANTLRFix(let s):
+                            toLabel = s
+                        case .UserFix(let s):
+                            toLabel = s
+                        case .MachineLayerFix(let s):
+                            toLabel = s
+                        }
                     }
-                    annotationLabel.text = annotation
-                } else {
-                    annotationLabel.text = "Annotation: "
+                    switch (fix) {
+                    case.BracketsMismatchingFix(let s):
+                        annotation = annotation + "BracketsMisMatching fix from \(s) to \(toLabel)\n"
+                    case .HeuristicsFix(let s):
+                        annotation = annotation + "Heuristics fix from \(s) to \(toLabel)\n"
+                    case .ANTLRFix(let s):
+                        annotation = annotation + "ANTLR fix from \(s) to \(toLabel)\n"
+                    case .UserFix(let s):
+                        annotation = annotation + "UserFix from \(s) to \(toLabel)\n"
+                    case .MachineLayerFix(let s):
+                        annotation = annotation + "ML fix from \(s) to \(toLabel)\n"
+                    }
                 }
+                annotationLabel.text = annotation
                 candidatesPickerView.reloadAllComponents()
             } else {
                 // reset bottom right UI to default
@@ -506,7 +522,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 for (wordIndex, w) in line.enumerated() {
                     let yOffset = lineIndex * 38 + 135
                     let highlightWordView=UIView(frame: CGRect(x: w.x*5.2, y: (w.y+Double(yOffset)), width: w.width*5, height: w.height*5))
-                    highlightWordView.backgroundColor = w.fixProvider == nil ? UIColor.lightGray : UIColor.orange
+                    highlightWordView.backgroundColor = w.fixProviders.count == 0 ? UIColor.lightGray : UIColor.orange
                     highlightWordView.layer.borderWidth=3
                     highlightWordView.layer.borderColor = UIColor.red.cgColor
                     highlightWordView.alpha = 0.5
@@ -584,7 +600,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             // if 'other' textfield is not empty then replace label with this
             // else replace label with candidatePicker
             let w = highlightWordViews[selectedWord.0][selectedWord.1].word
-            w.fixProvider = FixProvider.UserFix(w.label)
+            w.fixProviders.append(FixProvider.UserFix(w.label))
             let otherField = otherTextField.text
             if otherField != "" {
                 w.label = otherField!
@@ -747,7 +763,7 @@ public class Word {
     public var y = 0.0
     public var width = 0.0
     public var height = 0.0
-    public var fixProvider: FixProvider?
+    public var fixProviders: [FixProvider] = []
     
     init(label l: String, candidates c: [String]) {
         label = l
@@ -779,10 +795,11 @@ public class Word {
 }
 
 public enum FixProvider {
-    case UserFix(String)
-    case PreprocessingFix(String)
-    case MachineLayerFix(String)
+    case BracketsMismatchingFix(String)
+    case HeuristicsFix(String)
     case ANTLRFix(String)
+    case UserFix(String)
+    case MachineLayerFix(String)
 }
 
 extension String {

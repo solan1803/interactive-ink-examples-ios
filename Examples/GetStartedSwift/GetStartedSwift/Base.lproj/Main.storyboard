@@ -102,7 +102,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f5u-y9-asG">
-                                <rect key="frame" x="0.0" y="64" width="1024" height="1102"/>
+                                <rect key="frame" x="0.0" y="64" width="1024" height="1002"/>
                                 <connections>
                                     <segue destination="TpP-KV-udZ" kind="embed" id="hUE-JS-5hp"/>
                                 </connections>
@@ -159,10 +159,10 @@
                                 </constraints>
                             </view>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="J3J-LR-W59">
-                                <rect key="frame" x="20" y="1166" width="600" height="200"/>
+                                <rect key="frame" x="20" y="1066" width="600" height="300"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="oAg-yU-XXn"/>
+                                    <constraint firstAttribute="height" constant="300" id="oAg-yU-XXn"/>
                                     <constraint firstAttribute="width" constant="600" id="wky-89-c04"/>
                                 </constraints>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
@@ -170,10 +170,10 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Plg-Dz-pte">
-                                <rect key="frame" x="620" y="1166" width="384" height="200"/>
+                                <rect key="frame" x="620" y="1066" width="384" height="300"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="JFP-P1-Qt0">
-                                        <rect key="frame" x="5" y="5" width="374" height="190"/>
+                                        <rect key="frame" x="5" y="5" width="374" height="290"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="hOq-75-1fv">
                                                 <rect key="frame" x="0.0" y="0.0" width="257.5" height="31"/>
@@ -206,8 +206,8 @@
                                                     </button>
                                                 </subviews>
                                             </stackView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Annotation:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SBq-DO-3im">
-                                                <rect key="frame" x="0.0" y="31" width="88" height="20.5"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Annotation:" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SBq-DO-3im">
+                                                <rect key="frame" x="0.0" y="31" width="0.0" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -219,16 +219,16 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="hgR-tt-fDj">
-                                                <rect key="frame" x="0.0" y="72" width="374" height="88"/>
+                                                <rect key="frame" x="0.0" y="72" width="374" height="188"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Candidates:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JCg-cH-nt1">
-                                                        <rect key="frame" x="0.0" y="34" width="91.5" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="84" width="91.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <pickerView contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MOD-pz-dYX">
-                                                        <rect key="frame" x="91.5" y="9" width="282.5" height="70.5"/>
+                                                        <rect key="frame" x="91.5" y="59" width="282.5" height="70.5"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="70" id="GrM-1u-lvG"/>
                                                         </constraints>
@@ -236,7 +236,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="5Jk-L4-h8A">
-                                                <rect key="frame" x="0.0" y="160" width="158.5" height="30"/>
+                                                <rect key="frame" x="0.0" y="260" width="158.5" height="30"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Other:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WSu-vo-EL8">
                                                         <rect key="frame" x="0.0" y="0.0" width="48.5" height="30"/>

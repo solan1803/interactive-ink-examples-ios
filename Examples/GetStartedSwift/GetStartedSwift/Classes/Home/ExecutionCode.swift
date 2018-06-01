@@ -116,7 +116,9 @@ func executeCodeOnLeetCode(codeBody: String, filename: String, outputTextField: 
             print(response!)
             if let httpResponse = response as? HTTPURLResponse, let fields = httpResponse.allHeaderFields as? [String : String] {
                 let cookies = HTTPCookie.cookies(withResponseHeaderFields: fields, for: response!.url!)
-                csrfToken = cookies[1].value
+                if cookies.count > 1 {
+                    csrfToken = cookies[1].value
+                }
                 print("csrfToken set to: \(csrfToken)")
                 DispatchQueue.main.async {
                     outputTextField.text = outputTextField.text + "POST https://leetcode.com/accounts/login/ STATUS \(httpResponse.statusCode)\n"

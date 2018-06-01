@@ -247,6 +247,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                             }
                             preprocessRecognition += "\n "
                         }
+                        heuristicsProcessingPostLexer()
                         let result = getParseTree(completeLabel)
                         return "MyScript Recognition: \n \(completeLabel) \n PreProcessing Stage: \n \(preprocessRecognition) \n Candidates: \n \(candidateWords) \n PreProcessResult: \(preprocessErrors) \n \(result)"
                         //outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords)"
@@ -371,6 +372,72 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         return preprocessMessage
     }
     
+    func heuristicsProcessingPostLexer() {
+        var codeString = ""
+        for eachLine in wordsList {
+            for w in eachLine {
+                codeString += w.label + " "
+            }
+            codeString += "\n"
+        }
+        let input = ANTLRInputStream(codeString)
+        /* Create a lexer that feeds off of input CharStream */
+        let lexer = Java9Lexer(input)
+        let allTokens = try! lexer.getAllTokens()
+        var indexInCurrentWord = 0
+        var flattenWordsList = wordsList.flatMap {$0}
+        var wordIndex = 0
+        var currentWord = flattenWordsList[wordIndex]
+        for i in 0..<allTokens.count {
+            let t = allTokens[i]
+            if t.getType() == Java9Parser.Tokens.IF.rawValue || t.getType() == Java9Parser.Tokens.FOR.rawValue
+                || t.getType() == Java9Parser.Tokens.SWITCH.rawValue || t.getType() == Java9Parser.Tokens.WHILE.rawValue {
+                // shift
+                if (t.getText()?.count)! >= currentWord.label.count - indexInCurrentWord {
+                    // overflows onto next bounding box
+                    var indexInToken = 0
+                    while (t.getText()?.count)! - indexInToken >= currentWord.label.count - indexInCurrentWord  {
+                        indexInToken = currentWord.label.count - indexInCurrentWord + indexInToken
+                        // move to next Word object
+                        indexInCurrentWord = 0
+                        wordIndex = wordIndex + 1
+                        currentWord = flattenWordsList[wordIndex]
+                    }
+                    // complete partial overflow in current word
+                    indexInCurrentWord = indexInCurrentWord + (t.getText()?.count)! - indexInToken
+                } else {
+                    indexInCurrentWord = indexInCurrentWord + (t.getText()?.count)!
+                }
+                // next token must be a '('
+                if i+1 < allTokens.count && allTokens[i+1].getType() != Java9Parser.Tokens.LPAREN.rawValue {
+                    // change next letter to '(' and SKIP rest of token
+                    let i = currentWord.label.index(currentWord.label.startIndex, offsetBy: indexInCurrentWord)
+                    currentWord.fixProviders.append(.HeuristicsFix(currentWord.label))
+                    currentWord.label = currentWord.label.replacingCharacters(in: i...i, with: "(")
+                }
+            } else {
+                // shift
+                if (t.getText()?.count)! >= currentWord.label.count - indexInCurrentWord {
+                    // overflows onto next bounding box
+                    var indexInToken = 0
+                    while (t.getText()?.count)! - indexInToken >= currentWord.label.count - indexInCurrentWord  {
+                        indexInToken = currentWord.label.count - indexInCurrentWord + indexInToken
+                        // move to next Word object
+                        indexInCurrentWord = 0
+                        wordIndex = wordIndex + 1
+                        if (wordIndex < flattenWordsList.count) {
+                            currentWord = flattenWordsList[wordIndex]
+                        }
+                    }
+                    // complete partial overflow in current word
+                    indexInCurrentWord = indexInCurrentWord + (t.getText()?.count)! - indexInToken
+                } else {
+                    indexInCurrentWord = indexInCurrentWord + (t.getText()?.count)!
+                }
+            }
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let identifier = segue.identifier {
             switch identifier {
@@ -490,7 +557,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     }
                     switch (fix) {
                     case.BracketsMismatchingFix(let s):
-                        annotation = annotation + "BracketsMisMatching fix from \(s) to \(toLabel)\n"
+                        annotation = annotation + "BracketsMismatching fix from \(s) to \(toLabel)\n"
                     case .HeuristicsFix(let s):
                         annotation = annotation + "Heuristics fix from \(s) to \(toLabel)\n"
                     case .ANTLRFix(let s):
@@ -522,7 +589,26 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 for (wordIndex, w) in line.enumerated() {
                     let yOffset = lineIndex * 38 + 135
                     let highlightWordView=UIView(frame: CGRect(x: w.x*5.2, y: (w.y+Double(yOffset)), width: w.width*5, height: w.height*5))
-                    highlightWordView.backgroundColor = w.fixProviders.count == 0 ? UIColor.lightGray : UIColor.orange
+                    if w.fixProviders.count == 0 {
+                        highlightWordView.backgroundColor = UIColor.lightGray
+                    } else if w.fixProviders.count == 1 {
+                        let onlyFix = w.fixProviders[0]
+                        switch (onlyFix) {
+                        case.BracketsMismatchingFix:
+                            highlightWordView.backgroundColor = UIColor.orange
+                        case .HeuristicsFix:
+                            highlightWordView.backgroundColor = UIColor.yellow
+                        case .ANTLRFix:
+                            highlightWordView.backgroundColor = UIColor.magenta
+                        case .UserFix:
+                            highlightWordView.backgroundColor = UIColor.purple
+                        case .MachineLayerFix:
+                            highlightWordView.backgroundColor = UIColor(red: 255/255, green: 0/255, blue: 233/255, alpha: 1.0)
+                        }
+                    } else {
+                        // more than one fix provider triggered
+                        highlightWordView.backgroundColor = UIColor.green
+                    }
                     highlightWordView.layer.borderWidth=3
                     highlightWordView.layer.borderColor = UIColor.red.cgColor
                     highlightWordView.alpha = 0.5
@@ -583,9 +669,60 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 }
             }
         }
+        code = getFinalCodeString(code)
+        
         // You can omit the second parameter to use automatic language detection.
         let highlightedCode = highlightr?.highlight(code, as: "java")
         outputTextField.attributedText = highlightedCode
+    }
+    
+    func getFinalCodeString(_ code: String)->String {
+        // Join identifier tokens e.g. get Least Numbers = getLeastNumbers
+        let input = ANTLRInputStream(code)
+        let lexer = Java9Lexer(input)
+        let allTokens = try! lexer.getAllTokens()
+        var code = ""
+        var currentLine = 1
+        var i = 0
+        for _ in 0..<allTokens.count {
+            if i >= allTokens.count {
+                break
+            }
+            let t = allTokens[i]
+            if t.getLine() > currentLine {
+                currentLine = currentLine + 1
+                code = code + "\n"
+            }
+            // if sequence of identifiers not beginning with "String"
+            if t.getType() == Java9Parser.Tokens.Identifier.rawValue && t.getText() != "String" {
+                code = code + t.getText()!
+                i = i + 1
+                while (i < allTokens.count && allTokens[i].getType() == Java9Parser.Tokens.Identifier.rawValue) {
+                    code = code + allTokens[i].getText()!
+                    i = i + 1
+                }
+                code = code + " "
+            } else if t.getType() == Java9Parser.Tokens.LBRACK.rawValue {
+                // remove space previously inserted
+                code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
+                code = code + t.getText()!
+                i = i + 1
+            } else if t.getType() == Java9Parser.Tokens.DOT.rawValue {
+                code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
+                code = code + t.getText()!
+                i = i + 1
+            } else if t.getType() == Java9Parser.Tokens.ADD.rawValue {
+                code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
+                code = code + t.getText()!
+                code = code + " "
+                i = i + 1
+            } else {
+                code = code + t.getText()!
+                code = code + " "
+                i = i + 1
+            }
+        }
+        return code
     }
     
     @objc func handleTap(sender: HighlightWordTapGestureRecognizer) {
@@ -601,6 +738,11 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             // else replace label with candidatePicker
             let w = highlightWordViews[selectedWord.0][selectedWord.1].word
             w.fixProviders.append(FixProvider.UserFix(w.label))
+            if highlightWordViews[selectedWord.0][selectedWord.1].word.fixProviders.count > 1 {
+                highlightWordViews[selectedWord.0][selectedWord.1].view.backgroundColor = UIColor.green
+            } else {
+                highlightWordViews[selectedWord.0][selectedWord.1].view.backgroundColor = UIColor.purple
+            }
             let otherField = otherTextField.text
             if otherField != "" {
                 w.label = otherField!
@@ -608,7 +750,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 let selectedRow = candidatesPickerView.selectedRow(inComponent: 0)
                 w.label = w.candidates[selectedRow]
             }
-            highlightWordViews[selectedWord.0][selectedWord.1].view.backgroundColor = UIColor.orange
             // Reset bottom right UI and also force set border color to blue
             selectedHighlightWord = selectedWord
             highlightWordViews[selectedWord.0][selectedWord.1].view.layer.borderColor = UIColor.blue.cgColor
@@ -661,6 +802,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             }
             codeString = codeString + "\n"
         }
+        codeString = getFinalCodeString(codeString)
         // Handover execution to specific functinos
         if type == "custom" {
             outputTextField.text = executeCodeOnServer(codeBody: codeString)

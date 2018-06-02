@@ -813,6 +813,11 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     // MARK: GENERATE STROKES PROGRAMATICALLY
     
+    @IBAction func generateHandwritingButtonClicked(_ sender: UIBarButtonItem) {
+        //generateHandwritingOnSeparateLinesFromCharArray(array: [",", "&"])
+        generateHandwritingFromString(forCode: "int n = s.length(), ans = 0;\nint[] index = new int[128];\nfor (int j = 0, i = 0; j < n; j++) {\ni = Math.max(index[s.charAt(j)], i);\nans = Math.max(ans, j - i + 1);\nindex[s.charAt(j)] = j + 1;\n}\nreturn ans;")
+    }
+    
     func generateHandwritingFromString(forCode code: String) {
         var prevChar = ""
         var h_spacing = 0.0

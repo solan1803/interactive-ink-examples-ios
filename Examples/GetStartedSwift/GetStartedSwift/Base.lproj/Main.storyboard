@@ -314,6 +314,11 @@
                                     <action selector="executeCode:" destination="BYZ-38-t0r" id="eYD-KR-wFV"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem title="Generate Handwriting" id="mrA-ui-UQy">
+                                <connections>
+                                    <action selector="generateHandwritingButtonClicked:" destination="BYZ-38-t0r" id="ns6-B7-Ecy"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>

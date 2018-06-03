@@ -219,16 +219,16 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="hgR-tt-fDj">
-                                                <rect key="frame" x="0.0" y="72" width="374" height="188"/>
+                                                <rect key="frame" x="0.0" y="72" width="374" height="148"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Candidates:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JCg-cH-nt1">
-                                                        <rect key="frame" x="0.0" y="84" width="91.5" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="64" width="91.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <pickerView contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MOD-pz-dYX">
-                                                        <rect key="frame" x="91.5" y="59" width="282.5" height="70.5"/>
+                                                    <pickerView tag="1" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MOD-pz-dYX">
+                                                        <rect key="frame" x="91.5" y="39" width="282.5" height="70.5"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="70" id="GrM-1u-lvG"/>
                                                         </constraints>
@@ -236,23 +236,29 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="5Jk-L4-h8A">
-                                                <rect key="frame" x="0.0" y="260" width="158.5" height="30"/>
+                                                <rect key="frame" x="0.0" y="220" width="374" height="70"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Other:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WSu-vo-EL8">
-                                                        <rect key="frame" x="0.0" y="0.0" width="48.5" height="30"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Other:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WSu-vo-EL8">
+                                                        <rect key="frame" x="0.0" y="0.0" width="48.5" height="70"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ODC-aH-OTi">
-                                                        <rect key="frame" x="58.5" y="0.0" width="100" height="30"/>
+                                                    <textField opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ODC-aH-OTi">
+                                                        <rect key="frame" x="58.5" y="0.0" width="90" height="70"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="100" id="tw3-Pw-36w"/>
+                                                            <constraint firstAttribute="width" constant="90" id="nRk-uV-ZI6"/>
                                                         </constraints>
                                                         <nil key="textColor"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
+                                                    <pickerView tag="2" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7Rg-65-4Pm">
+                                                        <rect key="frame" x="158.5" y="0.0" width="215.5" height="70"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="70" id="eRr-a0-jMG"/>
+                                                        </constraints>
+                                                    </pickerView>
                                                 </subviews>
                                             </stackView>
                                         </subviews>
@@ -323,6 +329,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="annotationLabel" destination="SBq-DO-3im" id="2P0-vC-mdH"/>
+                        <outlet property="bottomRightView" destination="Plg-Dz-pte" id="6HI-qz-SFP"/>
                         <outlet property="candidatesPickerView" destination="MOD-pz-dYX" id="SBk-bT-t9Y"/>
                         <outlet property="convertBarButtonItem" destination="dbl-Jz-DDd" id="yXR-xx-0nm"/>
                         <outlet property="highlightSwitch" destination="Nwf-fb-7NI" id="tag-4K-C0t"/>
@@ -331,6 +338,7 @@
                         <outlet property="otherTextField" destination="ODC-aH-OTi" id="MrK-8x-h7Z"/>
                         <outlet property="outputTextField" destination="J3J-LR-W59" id="owG-jY-EY5"/>
                         <outlet property="settingsBarButtonItem" destination="Rnr-Bx-gS1" id="kV5-cH-UpV"/>
+                        <outlet property="spacePickerView" destination="7Rg-65-4Pm" id="wZt-1l-pLI"/>
                         <outlet property="wordLabel" destination="jfo-LE-oUh" id="MKC-d2-N5Y"/>
                     </connections>
                 </viewController>

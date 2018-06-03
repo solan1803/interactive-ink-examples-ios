@@ -31,6 +31,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBOutlet weak var candidatesPickerView: UIPickerView!
     @IBOutlet weak var otherTextField: UITextField!
     @IBOutlet weak var outputTextField: UITextView!
+    @IBOutlet weak var spacePickerView: UIPickerView!
+    @IBOutlet weak var bottomRightView: UIView!
     
     override func viewWillAppear(_ animated: Bool) {
         let defaults = UserDefaults.standard
@@ -137,6 +139,11 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         
         candidatesPickerView.delegate = self
         candidatesPickerView.dataSource = self
+        spacePickerView.delegate = self
+        spacePickerView.dataSource = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(HomeViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(HomeViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         // print a line of code
 //        let codeString = "public static void main(String[] args) { \nSystem.out.println(\"test\"); \n}"
@@ -535,6 +542,9 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     var selectedHighlightWord: (Int, Int)? {
         didSet {
             if let newSelected = selectedHighlightWord {
+                // animate bottom right UI view
+                UIView.animate(withDuration: 0.5, animations: {self.bottomRightView.backgroundColor = UIColor(red: 147/255, green: 248/255, blue: 249/255, alpha: 1.0)})
+                UIView.animate(withDuration: 0.5, animations: {self.bottomRightView.backgroundColor = UIColor.white})
                 // update bottom right UI of screen
                 wordLabel.text = "Label: \(highlightWordViews[newSelected.0][newSelected.1].word.label)"
                 var annotation = "Annotation: "
@@ -569,12 +579,26 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     }
                 }
                 annotationLabel.text = annotation
+                otherTextField.text = ""
                 candidatesPickerView.reloadAllComponents()
+                // set space picker selected value
+                var row = 0
+                switch highlightWordViews[newSelected.0][newSelected.1].word.nextSpace {
+                case .NO_SPACE:
+                    row = 0
+                case .ADD_SPACE:
+                    row = 1
+                case .DELETE_SPACE:
+                    row = 2
+                }
+                spacePickerView.selectRow(row, inComponent: 0, animated: false)
             } else {
                 // reset bottom right UI to default
                 wordLabel.text = "Label: "
                 annotationLabel.text = "Annotation: "
+                otherTextField.text = ""
                 candidatesPickerView.reloadAllComponents()
+                spacePickerView.selectRow(0, inComponent: 0, animated: false)
             }
             if let old = oldValue{
                 highlightWordViews[old.0][old.1].view.layer.borderColor = UIColor.red.cgColor
@@ -659,17 +683,17 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         var code = ""
         if type == "custom" {
             code = codeBody
+            code = getFinalCodeString(code)
         } else if type == "leetcode" {
             if let d = defaults.dictionary(forKey: "FileSettings") {
                 var allFileSettings = d as! Dictionary<String, Dictionary<String, String>>
                 if let fs = allFileSettings[documentTitleText] {
                     let id = fs["id"]!
                     let index = Int(id)! - 1
-                    code = LEETCODE_DATA[index][6] + codeBody + LEETCODE_DATA[index][7]
+                    code = LEETCODE_DATA[index][6] + getFinalCodeString(codeBody) + LEETCODE_DATA[index][7]
                 }
             }
         }
-        code = getFinalCodeString(code)
         
         // You can omit the second parameter to use automatic language detection.
         let highlightedCode = highlightr?.highlight(code, as: "java")
@@ -722,6 +746,33 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 i = i + 1
             }
         }
+        // handle forced spaces
+        var currentIndexInCode = 0
+        var currentIndexInWord = 0
+        var currentWord = 0
+        let flattenedWordsList = wordsList.flatMap {$0}
+        for c in code {
+            if currentWord >= flattenedWordsList.count {
+                break
+            }
+            currentIndexInCode = currentIndexInCode + 1
+            if c != " " && c != "\n" {
+                let w = flattenedWordsList[currentWord]
+                assert(c == w.label[w.label.index(w.label.startIndex, offsetBy: currentIndexInWord)])
+                currentIndexInWord = currentIndexInWord + 1
+                if (currentIndexInWord == w.label.count) {
+                    currentIndexInWord = 0
+                    currentWord = currentWord + 1
+                    if w.nextSpace == .ADD_SPACE {
+                        code.insert(" ", at: code.index(code.startIndex, offsetBy: currentIndexInCode))
+                        currentIndexInCode = currentIndexInCode + 1
+                    } else if w.nextSpace == .DELETE_SPACE {
+                        code.remove(at: code.index(code.startIndex, offsetBy: currentIndexInCode))
+                        currentIndexInCode = currentIndexInCode - 1
+                    }
+                }
+            }
+        }
         return code
     }
     
@@ -765,22 +816,46 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     // MARK: CANDIDATES_PICKER_VIEW METHODS
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
+        if pickerView.tag == 1 {
+            return 1
+        } else if pickerView.tag == 2 {
+            return 1
+        }
+        return 0
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if let selectedWord = selectedHighlightWord {
-            return highlightWordViews[selectedWord.0][selectedWord.1].word.candidates.count
-        } else {
-            return 0
+        if pickerView.tag == 1 {
+            if let selectedWord = selectedHighlightWord {
+                return highlightWordViews[selectedWord.0][selectedWord.1].word.candidates.count
+            } else {
+                return 0
+            }
+        } else if pickerView.tag == 2 {
+            return 3
         }
+        return 0
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if let selectedWord = selectedHighlightWord {
-            return highlightWordViews[selectedWord.0][selectedWord.1].word.candidates[row]
-        } else {
-            return nil
+        if pickerView.tag == 1 {
+            if let selectedWord = selectedHighlightWord {
+                return highlightWordViews[selectedWord.0][selectedWord.1].word.candidates[row]
+            } else {
+                return nil
+            }
+        } else if pickerView.tag == 2 {
+            return [SPACE_TYPE.NO_SPACE.rawValue, SPACE_TYPE.ADD_SPACE.rawValue, SPACE_TYPE.DELETE_SPACE.rawValue][row]
+        }
+        return nil
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if pickerView.tag == 2, let selectedWord = selectedHighlightWord {
+            let w = highlightWordViews[selectedWord.0][selectedWord.1].word
+            let selectedSpaceRow = spacePickerView.selectedRow(inComponent: 0)
+            w.nextSpace = [SPACE_TYPE.NO_SPACE, SPACE_TYPE.ADD_SPACE, SPACE_TYPE.DELETE_SPACE][selectedSpaceRow]
+            syntaxHighlight()
         }
     }
     
@@ -879,6 +954,23 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
 
     }
     
+    // MARK: KEYBOARD SHIFT VIEW
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0{
+                self.view.frame.origin.y -= keyboardSize.height
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y != 0{
+                self.view.frame.origin.y += keyboardSize.height
+            }
+        }
+    }
+    
 }
 
 public class HighlightWordTapGestureRecognizer: UITapGestureRecognizer {
@@ -942,10 +1034,10 @@ public class Word {
     }
 }
 
-public enum SPACE_TYPE {
-    case NO_SPACE
-    case ADD_SPACE
-    case DELETE_SPACE
+public enum SPACE_TYPE: String {
+    case NO_SPACE = "No Space"
+    case ADD_SPACE = "Add Space"
+    case DELETE_SPACE = "Delete Space"
 }
 
 public enum FixProvider {

@@ -815,7 +815,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     @IBAction func generateHandwritingButtonClicked(_ sender: UIBarButtonItem) {
         //generateHandwritingOnSeparateLinesFromCharArray(array: [",", "&"])
-        generateHandwritingFromString(forCode: "int n = s.length(), ans = 0;\nint[] index = new int[128];\nfor (int j = 0, i = 0; j < n; j++) {\ni = Math.max(index[s.charAt(j)], i);\nans = Math.max(ans, j - i + 1);\nindex[s.charAt(j)] = j + 1;\n}\nreturn ans;")
+        generateHandwritingFromString(forCode: "ListNode dummyHead = new ListNode(0);\nListNode p = l1, q = l2, curr = dummyHead;\nint carry = 0;\nwhile (p != null || q != null) {\nint x = (p != null) ? p.val : 0;\nint y = (q != null) ? q.val : 0;\nint sum = carry + x + y;\ncarry = sum / 10;\ncurr.next = new ListNode(sum % 10);\ncurr = curr.next;\nif (p != null) {\np = p.next;\n}\nif (q != null) {\nq = q.next;\n}\n}\nif (carry > 0) {\ncurr.next = new ListNode(carry);\n}\nreturn dummyHead.next;")
     }
     
     func generateHandwritingFromString(forCode code: String) {
@@ -911,6 +911,7 @@ public class Word {
     public var width = 0.0
     public var height = 0.0
     public var fixProviders: [FixProvider] = []
+    public var nextSpace: SPACE_TYPE = .NO_SPACE
     
     init(label l: String, candidates c: [String]) {
         label = l
@@ -939,6 +940,12 @@ public class Word {
             }
         }
     }
+}
+
+public enum SPACE_TYPE {
+    case NO_SPACE
+    case ADD_SPACE
+    case DELETE_SPACE
 }
 
 public enum FixProvider {

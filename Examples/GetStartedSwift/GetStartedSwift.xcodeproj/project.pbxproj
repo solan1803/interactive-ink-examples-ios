@@ -14,6 +14,7 @@
 		554A0B7B1F4745DF00C30FE6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 554A0B791F4745DF00C30FE6 /* LaunchScreen.storyboard */; };
 		55BCF1001F4746A80065868A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCF0E21F4746A80065868A /* AppDelegate.swift */; };
 		55BCF1021F4746A80065868A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55BCF0E81F4746A80065868A /* Assets.xcassets */; };
+		E00AF66A20C4488B00730CD2 /* Java9ANTLRSemanticFixesWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00AF66920C4488B00730CD2 /* Java9ANTLRSemanticFixesWalker.swift */; };
 		E03167C420B5ABE100620FED /* DataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E03167C320B5ABE100620FED /* DataSet.swift */; };
 		E084DF2E2030537D00C32ECC /* Antlr4.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E084DF2B203052F300C32ECC /* Antlr4.framework */; };
 		E084DF3D2030541500C32ECC /* Java9Visitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E084DF302030541500C32ECC /* Java9Visitor.swift */; };
@@ -104,6 +105,7 @@
 		55BCF1121F4747200065868A /* GetStartedSwift-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GetStartedSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		8E0E461AFE44F3378F2D361C /* libPods-GetStartedSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GetStartedSwift.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF462DE7D671DA0B1695C68E /* Pods-GetStartedSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GetStartedSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GetStartedSwift/Pods-GetStartedSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		E00AF66920C4488B00730CD2 /* Java9ANTLRSemanticFixesWalker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Java9ANTLRSemanticFixesWalker.swift; sourceTree = "<group>"; };
 		E03167C320B5ABE100620FED /* DataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSet.swift; sourceTree = "<group>"; };
 		E084DF21203052F200C32ECC /* Antlr4.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Antlr4.xcodeproj; path = ../../../antlr4/runtime/Swift/Antlr4.xcodeproj; sourceTree = "<group>"; };
 		E084DF302030541500C32ECC /* Java9Visitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Java9Visitor.swift; sourceTree = "<group>"; };
@@ -283,6 +285,7 @@
 				E084DF3B2030541500C32ECC /* Java9Lexer.tokens */,
 				E084DF3C2030541500C32ECC /* Java9.tokens */,
 				E0931B82203C40C900B84863 /* Java9PrintRulesWalker.swift */,
+				E00AF66920C4488B00730CD2 /* Java9ANTLRSemanticFixesWalker.swift */,
 			);
 			path = "Java Compiler";
 			sourceTree = "<group>";
@@ -988,6 +991,7 @@
 				E0BB547D2038C84200F688B5 /* LoadFilesTableViewController.swift in Sources */,
 				E0BB377C20BD649D0041E75A /* LeetCodeQuestionTableViewCell.swift in Sources */,
 				E0BB377A20BD628A0041E75A /* LeetCodeDataSet.swift in Sources */,
+				E00AF66A20C4488B00730CD2 /* Java9ANTLRSemanticFixesWalker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

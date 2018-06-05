@@ -176,7 +176,7 @@
                                         <rect key="frame" x="5" y="5" width="374" height="290"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="hOq-75-1fv">
-                                                <rect key="frame" x="0.0" y="0.0" width="257.5" height="31"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="367" height="31"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Highlight:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r3d-lH-0jB">
                                                         <rect key="frame" x="0.0" y="0.0" width="73.5" height="31"/>
@@ -190,16 +190,27 @@
                                                             <action selector="addHighlightViews:" destination="BYZ-38-t0r" eventType="valueChanged" id="0Vb-Yy-UQP"/>
                                                         </connections>
                                                     </switch>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ANTLR:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ufY-j1-SwX">
+                                                        <rect key="frame" x="142.5" y="0.0" width="58.5" height="31"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ZKk-Y6-LSU">
+                                                        <rect key="frame" x="211" y="0.0" width="51" height="31"/>
+                                                    </switch>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RXy-HM-Pz9">
-                                                        <rect key="frame" x="142.5" y="0.0" width="57" height="31"/>
+                                                        <rect key="frame" x="270" y="0.0" width="57" height="31"/>
                                                         <state key="normal" title="Save Fix"/>
                                                         <connections>
                                                             <action selector="saveHighlightWordChanges:" destination="BYZ-38-t0r" eventType="touchUpInside" id="j0b-ka-vuf"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1wZ-Ts-ho9">
-                                                        <rect key="frame" x="209.5" y="0.0" width="48" height="31"/>
-                                                        <state key="normal" title="Cancel"/>
+                                                        <rect key="frame" x="337" y="0.0" width="30" height="31"/>
+                                                        <state key="normal" title="X">
+                                                            <color key="titleColor" red="0.96219497919082642" green="0.033600691630296088" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        </state>
                                                         <connections>
                                                             <action selector="cancelSelectedHighlightWord:" destination="BYZ-38-t0r" eventType="touchUpInside" id="aIm-nR-OnJ"/>
                                                         </connections>
@@ -329,6 +340,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="annotationLabel" destination="SBq-DO-3im" id="2P0-vC-mdH"/>
+                        <outlet property="antlrSwitch" destination="ZKk-Y6-LSU" id="yHw-aA-qSO"/>
                         <outlet property="bottomRightView" destination="Plg-Dz-pte" id="6HI-qz-SFP"/>
                         <outlet property="candidatesPickerView" destination="MOD-pz-dYX" id="SBk-bT-t9Y"/>
                         <outlet property="convertBarButtonItem" destination="dbl-Jz-DDd" id="yXR-xx-0nm"/>

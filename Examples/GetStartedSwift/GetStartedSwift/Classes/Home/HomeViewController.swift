@@ -33,6 +33,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBOutlet weak var outputTextField: UITextView!
     @IBOutlet weak var spacePickerView: UIPickerView!
     @IBOutlet weak var bottomRightView: UIView!
+    @IBOutlet weak var antlrSwitch: UISwitch!
     
     override func viewWillAppear(_ animated: Bool) {
         let defaults = UserDefaults.standard
@@ -608,57 +609,65 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     @IBAction func addHighlightViews(_ sender: Any) {
         if highlightSwitch.isOn {
-            for (lineIndex, line) in wordsList.enumerated() {
-                var lineOfHighlightedWords: [HighlightWordView] = []
-                for (wordIndex, w) in line.enumerated() {
-                    let yOffset = lineIndex * 38 + 135
-                    let highlightWordView=UIView(frame: CGRect(x: w.x*5.2, y: (w.y+Double(yOffset)), width: w.width*5, height: w.height*5))
-                    if w.fixProviders.count == 0 {
-                        highlightWordView.backgroundColor = UIColor.lightGray
-                    } else if w.fixProviders.count == 1 {
-                        let onlyFix = w.fixProviders[0]
-                        switch (onlyFix) {
-                        case.BracketsMismatchingFix:
-                            highlightWordView.backgroundColor = UIColor.orange
-                        case .HeuristicsFix:
-                            highlightWordView.backgroundColor = UIColor.yellow
-                        case .ANTLRFix:
-                            highlightWordView.backgroundColor = UIColor.magenta
-                        case .UserFix:
-                            highlightWordView.backgroundColor = UIColor.purple
-                        case .MachineLayerFix:
-                            highlightWordView.backgroundColor = UIColor(red: 255/255, green: 0/255, blue: 233/255, alpha: 1.0)
-                        }
-                    } else {
-                        // more than one fix provider triggered
-                        highlightWordView.backgroundColor = UIColor.green
-                    }
-                    highlightWordView.layer.borderWidth=3
-                    highlightWordView.layer.borderColor = UIColor.red.cgColor
-                    highlightWordView.alpha = 0.5
-                    
-                    let tap = HighlightWordTapGestureRecognizer(target: self, action: #selector(handleTap(sender:)))
-                    tap.row = lineIndex
-                    tap.col = wordIndex
-                    highlightWordView.addGestureRecognizer(tap)
-                    self.view.addSubview(highlightWordView)
-                    
-                    let hwv = HighlightWordView(word: w, view: highlightWordView)
-                    
-                    lineOfHighlightedWords.append(hwv)
-                }
-                highlightWordViews.append(lineOfHighlightedWords)
-            }
+            addBoundingBoxes()
         } else {
-            for line in highlightWordViews {
-                for hwv in line {
-                    hwv.view.removeFromSuperview()
-                }
-            }
-            selectedHighlightWord = nil
-            highlightWordViews = []
+            removeBoundingBoxes()
         }
         syntaxHighlight()
+    }
+    
+    func removeBoundingBoxes() {
+        for line in highlightWordViews {
+            for hwv in line {
+                hwv.view.removeFromSuperview()
+            }
+        }
+        selectedHighlightWord = nil
+        highlightWordViews = []
+    }
+    
+    func addBoundingBoxes() {
+        for (lineIndex, line) in wordsList.enumerated() {
+            var lineOfHighlightedWords: [HighlightWordView] = []
+            for (wordIndex, w) in line.enumerated() {
+                let yOffset = lineIndex * 38 + 135
+                let highlightWordView=UIView(frame: CGRect(x: w.x*5.2, y: (w.y+Double(yOffset)), width: w.width*5, height: w.height*5))
+                if w.fixProviders.count == 0 {
+                    highlightWordView.backgroundColor = UIColor.lightGray
+                } else if w.fixProviders.count == 1 {
+                    let onlyFix = w.fixProviders[0]
+                    switch (onlyFix) {
+                    case.BracketsMismatchingFix:
+                        highlightWordView.backgroundColor = UIColor.orange
+                    case .HeuristicsFix:
+                        highlightWordView.backgroundColor = UIColor.yellow
+                    case .ANTLRFix:
+                        highlightWordView.backgroundColor = UIColor.magenta
+                    case .UserFix:
+                        highlightWordView.backgroundColor = UIColor.purple
+                    case .MachineLayerFix:
+                        highlightWordView.backgroundColor = UIColor(red: 255/255, green: 0/255, blue: 233/255, alpha: 1.0)
+                    }
+                } else {
+                    // more than one fix provider triggered
+                    highlightWordView.backgroundColor = UIColor.green
+                }
+                highlightWordView.layer.borderWidth=3
+                highlightWordView.layer.borderColor = UIColor.red.cgColor
+                highlightWordView.alpha = 0.5
+                
+                let tap = HighlightWordTapGestureRecognizer(target: self, action: #selector(handleTap(sender:)))
+                tap.row = lineIndex
+                tap.col = wordIndex
+                highlightWordView.addGestureRecognizer(tap)
+                self.view.addSubview(highlightWordView)
+                
+                let hwv = HighlightWordView(word: w, view: highlightWordView)
+                
+                lineOfHighlightedWords.append(hwv)
+            }
+            highlightWordViews.append(lineOfHighlightedWords)
+        }
     }
     
     func syntaxHighlight() {
@@ -690,6 +699,20 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 if let fs = allFileSettings[documentTitleText] {
                     let id = fs["id"]!
                     let index = Int(id)! - 1
+                    if antlrSwitch.isOn && highlightSwitch.isOn {
+                        antlrProcessing(openingCode: LEETCODE_DATA[index][6], body: getFinalCodeString(codeBody), closingCode: LEETCODE_DATA[index][7])
+                        // redraw bounding boxes since ANTLR fixes will cause colour changes
+                        removeBoundingBoxes()
+                        addBoundingBoxes()
+                        // antlr processing will change the code body
+                        codeBody = ""
+                        for eachLine in highlightWordViews {
+                            for hwv in eachLine {
+                                codeBody = codeBody + "\(hwv.word.label) "
+                            }
+                            codeBody = codeBody + "\n"
+                        }
+                    }
                     code = LEETCODE_DATA[index][6] + getFinalCodeString(codeBody) + LEETCODE_DATA[index][7]
                 }
             }
@@ -774,6 +797,30 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             }
         }
         return code
+    }
+    
+    func antlrProcessing(openingCode: String, body: String, closingCode: String) {
+        
+        let input1 = ANTLRInputStream(openingCode)
+        let lexer1 = Java9Lexer(input1)
+        let tokens1 = try! lexer1.getAllTokens()
+        
+        let input2 = ANTLRInputStream(body)
+        let lexer2 = Java9Lexer(input2)
+        let tokens2 = try! lexer2.getAllTokens()
+        
+        let input = ANTLRInputStream(openingCode + body + closingCode)
+        let lexer = Java9Lexer(input)
+        let tokens = CommonTokenStream(lexer);
+        
+        if tokens2.count != 0 {
+            if let parser = try? Java9Parser(tokens) {
+                /* Generate AST, begin parsing at the program rule */
+                if let tree = try? parser.classBodyDeclaration() {
+                    Java9ANTLRSemanticFixesWalker(parser, flattenedWordsList: wordsList.flatMap({$0}), startingLineOfCodeBody: (tokens1.last?.getLine())! + 1, startingLineOfClosingCode: (tokens2.last?.getLine())!).visit(tree)
+                }
+            }
+        }
     }
     
     @objc func handleTap(sender: HighlightWordTapGestureRecognizer) {

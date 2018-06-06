@@ -325,6 +325,11 @@
                                     <action selector="generateHandwritingButtonClicked:" destination="BYZ-38-t0r" id="ns6-B7-Ecy"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem title="Convert2" id="gAT-pX-JPA">
+                                <connections>
+                                    <action selector="convert2ButtonPressed:" destination="BYZ-38-t0r" id="zkU-hp-JrN"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>

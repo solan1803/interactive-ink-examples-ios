@@ -188,35 +188,27 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     private var wordsList: [[Word]] = []
     
-    
-    func convertButtonWasTouchedUpInside() -> String {
+    func getNewWordsList() -> [[Word]] {
         do {
-            //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
             let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
             let exportJSON = export.toJSON()
             //print(exportJSON)
-            wordsList = []
+            var newWordsList: [[Word]] = []
             if let jsonObj = exportJSON as? [String: Any] {
                 if let children = jsonObj["children"] as? [[String: Any]] {
-                    let completeLabel = "\(children[0]["label"]!)"
                     if let words = children[0]["words"] as? [[String: Any]] {
-                        var candidateWords = "";
                         var lineOfWords : [Word] = []
                         for var w in words {
                             if let label = w["label"] {
                                 if label as? String != " " {
                                     if label as? String == "\n" {
-                                        wordsList.append(lineOfWords)
+                                        newWordsList.append(lineOfWords)
                                         lineOfWords = []
-                                        candidateWords += "NEWLINE \n"
                                     } else {
-                                        candidateWords += "(label: \(label))    "
                                         if let candidates = w["candidates"] {
                                             let newWord = Word(label: label as! String, candidates: candidates as! [String])
                                             newWord.injectCandidates(startIndex: 0)
                                             lineOfWords.append(newWord)
-                                            let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
-                                            candidateWords += "\(candidatesOnOneLine) \n "
                                             if let boundingBox = w["bounding-box"] as? [String: Any] {
                                                 newWord.x = boundingBox["x"] as! Double
                                                 newWord.y = boundingBox["y"] as! Double
@@ -227,8 +219,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                                             let newWord = Word(label: label as! String, candidates: [])
                                             newWord.injectCandidates(startIndex: 0)
                                             lineOfWords.append(newWord)
-                                            let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
-                                            candidateWords += "no candidate words but has injected candidates: \(candidatesOnOneLine) \n"
                                             if let boundingBox = w["bounding-box"] as? [String: Any] {
                                                 newWord.x = boundingBox["x"] as! Double
                                                 newWord.y = boundingBox["y"] as! Double
@@ -238,34 +228,20 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                                         }
                                     }
                                 }
-                            } else {
-                                candidateWords += "ERROR: no label \n"
                             }
-                            
                         }
                         // Remember to add last line of words to wordlist
-                        wordsList.append(lineOfWords)
-                        let preprocessErrors = preprocessMyScriptRecognition()
-                        var preprocessRecognition = ""
-                        for eachLine in wordsList {
-                            for w in eachLine {
-                                preprocessRecognition += w.label
-                                preprocessRecognition += " "
-                            }
-                            preprocessRecognition += "\n "
-                        }
-                        heuristicsProcessingPostLexer()
-                        let result = getParseTree(completeLabel)
-                        return "MyScript Recognition: \n \(completeLabel) \n PreProcessing Stage: \n \(preprocessRecognition) \n Candidates: \n \(candidateWords) \n PreProcessResult: \(preprocessErrors) \n \(result)"
-                        //outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords)"
+                        newWordsList.append(lineOfWords)
+                        let _ = preprocessMyScriptRecognition()
+                        heuristicsProcessingPostLexer(newWordsList: newWordsList)
+                        return newWordsList
                     }
                 }
             }
-            // try editorViewController.editor.convert(nil, targetState: supportedTargetStates[0].value)
         } catch {
             print("Error while converting : " + error.localizedDescription)
         }
-        return ""
+        return [[]]
     }
     
     func preprocessBracketsFix() -> String {
@@ -379,9 +355,9 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         return preprocessMessage
     }
     
-    func heuristicsProcessingPostLexer() {
+    func heuristicsProcessingPostLexer(newWordsList: [[Word]]) {
         var codeString = ""
-        for eachLine in wordsList {
+        for eachLine in newWordsList {
             for w in eachLine {
                 codeString += w.label + " "
             }
@@ -392,7 +368,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         let lexer = Java9Lexer(input)
         let allTokens = try! lexer.getAllTokens()
         var indexInCurrentWord = 0
-        var flattenWordsList = wordsList.flatMap {$0}
+        var flattenWordsList = newWordsList.flatMap {$0}
         var wordIndex = 0
         var currentWord = flattenWordsList[wordIndex]
         for i in 0..<allTokens.count {
@@ -449,9 +425,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         if let identifier = segue.identifier {
             switch identifier {
             case "showConversion":
-                let output = convertButtonWasTouchedUpInside()
                 if let covc = segue.destination as? ConvertedOutputViewController {
-                    covc.convertedText = output
+                    covc.convertedText = ""
                 }
             case "settingsSegue":
                 if let settingsController = segue.destination as? SettingsTableViewController {
@@ -886,6 +861,25 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         }
     }
     
+    @IBAction func convert2ButtonPressed(_ sender: UIBarButtonItem) {
+        print("convert2ButtonPressed")
+        var newWordsList = getNewWordsList()
+        for (lineIndex, eachLine) in newWordsList.enumerated()  {
+            for (wIndex, newW) in eachLine.enumerated() {
+                for oldW in wordsList.flatMap({$0}) {
+                    if newW.width == oldW.width && newW.height == oldW.height && newW.originalLabel == oldW.originalLabel {
+                        let newWord = newWordsList[lineIndex][wIndex]
+                        newWordsList[lineIndex][wIndex] = oldW
+                        newWordsList[lineIndex][wIndex].x = newWord.x
+                        newWordsList[lineIndex][wIndex].y = newWord.y
+                        break
+                    }
+                }
+            }
+        }
+        wordsList = newWordsList
+    }
+    
     // MARK: GENERATE STROKES PROGRAMATICALLY
     
     @IBAction func generateHandwritingButtonClicked(_ sender: UIBarButtonItem) {
@@ -997,6 +991,7 @@ public var injectionList: [Word] = []
 public class Word {
     
     var label: String
+    var originalLabel: String
     var candidates: [String]
     public var x = 0.0
     public var y = 0.0
@@ -1007,6 +1002,7 @@ public class Word {
     
     init(label l: String, candidates c: [String]) {
         label = l
+        originalLabel = l
         candidates = c
     }
     

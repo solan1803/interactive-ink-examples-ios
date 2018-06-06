@@ -53,7 +53,7 @@
     self.inputView.backgroundColor = [UIColor clearColor];
     
     [self initDisplayViewController];
-    [self initSmartGuideViewController];
+    //[self initSmartGuideViewController];
 }
 
 - (void)viewDidLoad

@@ -66,11 +66,31 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 // check if file already exists with that title
                 do {
                     let fullPath = FileManager.default.pathForFile(inDocumentDirectory: filename) + ".iink"
-                    if !FileManager.default.fileExists(atPath: fullPath) {
-                        let oldPath = URL(fileURLWithPath: FileManager.default.pathForFile(inDocumentDirectory: self.documentTitleText) + ".iink")
+                    let fileManager = FileManager.default
+                    if !fileManager.fileExists(atPath: fullPath) {
+                        // Rename iink file
+                        let oldPath = URL(fileURLWithPath: fileManager.pathForFile(inDocumentDirectory: self.documentTitleText) + ".iink")
                         let newPath = URL(fileURLWithPath: fullPath)
-                        try FileManager.default.moveItem(at: oldPath, to: newPath)
-                        
+                        try fileManager.moveItem(at: oldPath, to: newPath)
+                        // Rename wordsList file
+                        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                        var wordsListURLs = try fileManager.contentsOfDirectory(at: documentsURL.appendingPathComponent("WordsListData"), includingPropertiesForKeys: nil)
+                        print(wordsListURLs)
+                        let oldWordsListPath = documentsURL.appendingPathComponent("WordsListData").appendingPathComponent(self.documentTitleText + ".json")
+                        let newWordsListPath = documentsURL.appendingPathComponent("WordsListData").appendingPathComponent(filename + ".json")
+                        try fileManager.moveItem(at: oldWordsListPath, to: newWordsListPath)
+                        wordsListURLs = try fileManager.contentsOfDirectory(at: documentsURL.appendingPathComponent("WordsListData"), includingPropertiesForKeys: nil)
+                        print(wordsListURLs)
+                        // Update file settings
+                        let defaults = UserDefaults.standard
+                        if let d = defaults.dictionary(forKey: "FileSettings") {
+                            var allFileSettings = d as! Dictionary<String, Dictionary<String, String>>
+                            let oldFileSettings = allFileSettings[self.documentTitleText]
+                            allFileSettings.removeValue(forKey: self.documentTitleText)
+                            allFileSettings[filename] = oldFileSettings
+                            defaults.set(allFileSettings, forKey: "FileSettings")
+                            print(defaults.value(forKey: "FileSettings"))
+                        }
                         if FileManager.default.fileExists(atPath: fullPath) {
                             self.loadContent(withFileURL: String(fullPath))
                         }

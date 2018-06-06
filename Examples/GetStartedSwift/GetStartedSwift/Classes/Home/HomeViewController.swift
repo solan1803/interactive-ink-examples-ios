@@ -34,6 +34,23 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBOutlet weak var spacePickerView: UIPickerView!
     @IBOutlet weak var bottomRightView: UIView!
     @IBOutlet weak var antlrSwitch: UISwitch!
+    @IBOutlet weak var symbolPairsSwitch: UISwitch!
+    @IBOutlet weak var endOfLineHeuristicsSwitch: UISwitch!
+    @IBOutlet weak var postLexerHeuristicsSwitch: UISwitch!
+    @IBOutlet weak var formattingSwitch: UISwitch!
+    
+    @IBOutlet weak var outputTextFieldTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bottomRightViewTopConstraint: NSLayoutConstraint!
+    
+    @IBAction func showHideToggles(_ sender: UISwitch) {
+        if sender.isOn {
+            outputTextFieldTopConstraint.constant = 50
+            bottomRightViewTopConstraint.constant = 50
+        } else {
+            outputTextFieldTopConstraint.constant = 0
+            bottomRightViewTopConstraint.constant = 0
+        }
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         let defaults = UserDefaults.standard
@@ -250,13 +267,22 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                                             }
                                         }
                                     }
+                                } else {
+                                    lineOfWords.last?.myScriptNextSpace = true
                                 }
                             }
                         }
                         // Remember to add last line of words to wordlist
                         newWordsList.append(lineOfWords)
-                        let _ = preprocessMyScriptRecognition()
-                        heuristicsProcessingPostLexer(newWordsList: newWordsList)
+                        if symbolPairsSwitch.isOn {
+                            let _ = preprocessBracketsFix()
+                        }
+                        if endOfLineHeuristicsSwitch.isOn {
+                            let _ = endOfLineHeuristics()
+                        }
+                        if postLexerHeuristicsSwitch.isOn {
+                            heuristicsProcessingPostLexer(newWordsList: newWordsList)
+                        }
                         return newWordsList
                     }
                 }
@@ -339,9 +365,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         return errorsMessage
     }
     
-    func preprocessMyScriptRecognition() -> String {
+    func endOfLineHeuristics() -> String {
         var preprocessMessage = "PREPROCESS ERRORS AT LINES: \n"
-        preprocessMessage += preprocessBracketsFix()
         for (index, eachLine) in wordsList.enumerated() {
             // Each line of code should end with a { or a ; (we are excluding short if-statements)
             // Otherwise line of code should only have one character the closing curly brace }
@@ -458,35 +483,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             default: break
             }
         }
-    }
-
-    func getParseTree(_ sourceCode: String) -> String {
-        let input = ANTLRInputStream(sourceCode);
-        var result = "";
-        /* Create a lexer that feeds off of input CharStream */
-        let lexer = Java9Lexer(input);
-        
-        /* Create a buffer of tokens pulled from the lexer */
-        let tokens = CommonTokenStream(lexer);
-        
-        /* Create a parser that feeds off the tokens buffer */
-        if let parser = try? Java9Parser(tokens) {
-            /* Generate AST, begin parsing at the program rule */
-            if let tree = try? parser.classBodyDeclaration() {
-                let printStr = Java9PrintRulesWalker(parser).visit(tree) ?? ""
-                print("\(printStr)")
-                let treeString = tree.getText()
-                var tokenList = ""
-                for t in tokens.getTokens() {
-                    tokenList += "\(lexer.getVocabulary().getSymbolicName(t.getType()) ?? "") "
-                    if t.getText() == "{" || t.getText() == "}" || t.getText() == ";" {
-                        tokenList += "\n"
-                    }
-                }
-                result = "Token List: \(tokenList) \n Parse Tree: \n \(printStr) \n Final Output: \n \(treeString)"
-            }
-        }
-        return result
     }
     
     // MARK: - Segmented control actions
@@ -743,49 +739,52 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     func getFinalCodeString(_ code: String)->String {
-        // Join identifier tokens e.g. get Least Numbers = getLeastNumbers
-        let input = ANTLRInputStream(code)
-        let lexer = Java9Lexer(input)
-        let allTokens = try! lexer.getAllTokens()
-        var code = ""
-        var currentLine = 1
-        var i = 0
-        for _ in 0..<allTokens.count {
-            if i >= allTokens.count {
-                break
-            }
-            let t = allTokens[i]
-            if t.getLine() > currentLine {
-                currentLine = currentLine + 1
-                code = code + "\n"
-            }
-            // if sequence of identifiers not beginning with "String"
-            if t.getType() == Java9Parser.Tokens.Identifier.rawValue && t.getText() != "String" {
-                code = code + t.getText()!
-                i = i + 1
-                while (i < allTokens.count && allTokens[i].getType() == Java9Parser.Tokens.Identifier.rawValue) {
-                    code = code + allTokens[i].getText()!
+        var code = code
+        if formattingSwitch.isOn {
+            // Join identifier tokens e.g. get Least Numbers = getLeastNumbers
+            let input = ANTLRInputStream(code)
+            let lexer = Java9Lexer(input)
+            let allTokens = try! lexer.getAllTokens()
+            code = ""
+            var currentLine = 1
+            var i = 0
+            for _ in 0..<allTokens.count {
+                if i >= allTokens.count {
+                    break
+                }
+                let t = allTokens[i]
+                if t.getLine() > currentLine {
+                    currentLine = currentLine + 1
+                    code = code + "\n"
+                }
+                // if sequence of identifiers not beginning with "String"
+                if t.getType() == Java9Parser.Tokens.Identifier.rawValue && t.getText() != "String" {
+                    code = code + t.getText()!
+                    i = i + 1
+                    while (i < allTokens.count && allTokens[i].getType() == Java9Parser.Tokens.Identifier.rawValue) {
+                        code = code + allTokens[i].getText()!
+                        i = i + 1
+                    }
+                    code = code + " "
+                } else if t.getType() == Java9Parser.Tokens.LBRACK.rawValue {
+                    // remove space previously inserted
+                    code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
+                    code = code + t.getText()!
+                    i = i + 1
+                } else if t.getType() == Java9Parser.Tokens.DOT.rawValue {
+                    code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
+                    code = code + t.getText()!
+                    i = i + 1
+                } else if t.getType() == Java9Parser.Tokens.ADD.rawValue {
+                    code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
+                    code = code + t.getText()!
+                    code = code + " "
+                    i = i + 1
+                } else {
+                    code = code + t.getText()!
+                    code = code + " "
                     i = i + 1
                 }
-                code = code + " "
-            } else if t.getType() == Java9Parser.Tokens.LBRACK.rawValue {
-                // remove space previously inserted
-                code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
-                code = code + t.getText()!
-                i = i + 1
-            } else if t.getType() == Java9Parser.Tokens.DOT.rawValue {
-                code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
-                code = code + t.getText()!
-                i = i + 1
-            } else if t.getType() == Java9Parser.Tokens.ADD.rawValue {
-                code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
-                code = code + t.getText()!
-                code = code + " "
-                i = i + 1
-            } else {
-                code = code + t.getText()!
-                code = code + " "
-                i = i + 1
             }
         }
         // handle forced spaces
@@ -952,6 +951,21 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         }
     }
     
+    @IBAction func completeConvert(_ sender: UIBarButtonItem) {
+        wordsList = getNewWordsList()
+        var code = ""
+        for eachLine in wordsList {
+            for w in eachLine {
+                code = code + w.label
+                if w.myScriptNextSpace {
+                    code = code + " "
+                }
+            }
+            code = code + "\n"
+        }
+        print(code)
+    }
+    
     @IBAction func convert2ButtonPressed(_ sender: UIBarButtonItem) {
         print("convert2ButtonPressed")
         var newWordsList = getNewWordsList()
@@ -1090,6 +1104,7 @@ public class Word: Codable {
     public var height = 0.0
     public var fixProviders: [FixProvider] = []
     public var nextSpace: SPACE_TYPE = .NO_SPACE
+    public var myScriptNextSpace = false
     
     init(label l: String, candidates c: [String]) {
         label = l

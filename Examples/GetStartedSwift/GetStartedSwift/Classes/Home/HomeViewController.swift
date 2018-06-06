@@ -166,7 +166,9 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     documentTitleText = packageName
                 }
             } else {
-                resultPackage = try engine.openPackage(fullPath)
+                // file exists, so call loadContent which will also load bounding box, it will also set the contentPackage
+                loadContent(withFileURL: String(fullPath))
+                resultPackage = contentPackage
             }
         }
         return resultPackage
@@ -478,6 +480,16 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBAction func saveContent(_ sender: UIBarButtonItem) {
         do {
             try contentPackage?.save()
+            // Save wordsList data
+            let jsonData: Data? = try? JSONEncoder().encode(wordsList)
+            let fileManager = FileManager.default
+            let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            do {
+                try? FileManager.default.createDirectory(atPath: documentsURL.appendingPathComponent("WordsListData").path, withIntermediateDirectories: true)
+                try jsonData?.write(to: documentsURL.appendingPathComponent("WordsListData").appendingPathComponent(documentTitleText + ".json"))
+            } catch {
+                print("Error trying to save wordsList file \(error.localizedDescription)")
+            }
         } catch {
             print("Error trying to save")
         }
@@ -492,6 +504,18 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     documentTitleText = String(fileURL[fileURL.index(fileURL.startIndex, offsetBy: 87)...fileURL.index(fileURL.endIndex, offsetBy: -6)])
                     //editorViewController.editor.clear()
                     try editorViewController.editor.part = package.getPartAt(0)
+                    // load saved wordsList
+                    let fileManager = FileManager.default
+                    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                    let wordsListPath = documentsURL.appendingPathComponent("WordsListData").appendingPathComponent(documentTitleText + ".json")
+                    let strPath = String(describing: wordsListPath)
+                    let range = strPath.index(strPath.startIndex, offsetBy:7)
+                    if fileManager.fileExists(atPath: String(strPath[range...].removingPercentEncoding!)) {
+                        let data = try Data(contentsOf: wordsListPath)
+                        if let newWordsList: [[Word]] = try? JSONDecoder().decode([[Word]].self, from: data) {
+                            wordsList = newWordsList
+                        }
+                    }
                 } catch {
                     print("ERROR: loadContent")
                 }
@@ -988,7 +1012,7 @@ public var injectionList: [Word] = []
 //    Word(label: "D", candidates: ["1)", "))"])
 //]
 
-public class Word {
+public class Word: Codable {
     
     var label: String
     var originalLabel: String
@@ -1030,7 +1054,7 @@ public class Word {
     }
 }
 
-public enum SPACE_TYPE: String {
+public enum SPACE_TYPE: String, Codable {
     case NO_SPACE = "No Space"
     case ADD_SPACE = "Add Space"
     case DELETE_SPACE = "Delete Space"
@@ -1042,6 +1066,41 @@ public enum FixProvider {
     case ANTLRFix(String)
     case UserFix(String)
     case MachineLayerFix(String)
+}
+
+extension FixProvider: Codable {
+    enum CodingKeys: String, CodingKey {
+        case BracketsMismatchingFix, HeuristicsFix, ANTLRFix, UserFix, MachineLayerFix
+    }
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let stringValue = try container.decodeIfPresent(String.self, forKey: .BracketsMismatchingFix) {
+            self = .BracketsMismatchingFix(stringValue)
+        } else if let stringValue = try container.decodeIfPresent(String.self, forKey: .HeuristicsFix) {
+            self = .HeuristicsFix(stringValue)
+        } else if let stringValue = try container.decodeIfPresent(String.self, forKey: .ANTLRFix) {
+            self = .ANTLRFix(stringValue)
+        } else if let stringValue = try container.decodeIfPresent(String.self, forKey: .UserFix) {
+            self = .UserFix(stringValue)
+        } else {
+            self = .MachineLayerFix(try container.decode(String.self, forKey: .MachineLayerFix))
+        }
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .BracketsMismatchingFix(let value):
+            try container.encode(value, forKey: .BracketsMismatchingFix)
+        case .HeuristicsFix(let value):
+            try container.encode(value, forKey: .HeuristicsFix)
+        case .ANTLRFix(let value):
+            try container.encode(value, forKey: .ANTLRFix)
+        case .UserFix(let value):
+            try container.encode(value, forKey: .UserFix)
+        case .MachineLayerFix(let value):
+            try container.encode(value, forKey: .MachineLayerFix)
+        }
+    }
 }
 
 extension String {

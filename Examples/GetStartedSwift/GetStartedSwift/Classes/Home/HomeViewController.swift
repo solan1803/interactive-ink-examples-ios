@@ -67,11 +67,31 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 // check if file already exists with that title
                 do {
                     let fullPath = FileManager.default.pathForFile(inDocumentDirectory: filename) + ".iink"
-                    if !FileManager.default.fileExists(atPath: fullPath) {
-                        let oldPath = URL(fileURLWithPath: FileManager.default.pathForFile(inDocumentDirectory: self.documentTitleText) + ".iink")
+                    let fileManager = FileManager.default
+                    if !fileManager.fileExists(atPath: fullPath) {
+                        // Rename iink file
+                        let oldPath = URL(fileURLWithPath: fileManager.pathForFile(inDocumentDirectory: self.documentTitleText) + ".iink")
                         let newPath = URL(fileURLWithPath: fullPath)
-                        try FileManager.default.moveItem(at: oldPath, to: newPath)
-                        
+                        try fileManager.moveItem(at: oldPath, to: newPath)
+                        // Rename wordsList file
+                        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                        var wordsListURLs = try fileManager.contentsOfDirectory(at: documentsURL.appendingPathComponent("WordsListData"), includingPropertiesForKeys: nil)
+                        print(wordsListURLs)
+                        let oldWordsListPath = documentsURL.appendingPathComponent("WordsListData").appendingPathComponent(self.documentTitleText + ".json")
+                        let newWordsListPath = documentsURL.appendingPathComponent("WordsListData").appendingPathComponent(filename + ".json")
+                        try fileManager.moveItem(at: oldWordsListPath, to: newWordsListPath)
+                        wordsListURLs = try fileManager.contentsOfDirectory(at: documentsURL.appendingPathComponent("WordsListData"), includingPropertiesForKeys: nil)
+                        print(wordsListURLs)
+                        // Update file settings
+                        let defaults = UserDefaults.standard
+                        if let d = defaults.dictionary(forKey: "FileSettings") {
+                            var allFileSettings = d as! Dictionary<String, Dictionary<String, String>>
+                            let oldFileSettings = allFileSettings[self.documentTitleText]
+                            allFileSettings.removeValue(forKey: self.documentTitleText)
+                            allFileSettings[filename] = oldFileSettings
+                            defaults.set(allFileSettings, forKey: "FileSettings")
+                            print(defaults.value(forKey: "FileSettings"))
+                        }
                         if FileManager.default.fileExists(atPath: fullPath) {
                             self.loadContent(withFileURL: String(fullPath))
                         }
@@ -167,7 +187,9 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     documentTitleText = packageName
                 }
             } else {
-                resultPackage = try engine.openPackage(fullPath)
+                // file exists, so call loadContent which will also load bounding box, it will also set the contentPackage
+                loadContent(withFileURL: String(fullPath))
+                resultPackage = contentPackage
             }
         }
         return resultPackage
@@ -189,35 +211,27 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     private var wordsList: [[Word]] = []
     
-    
-    func convertButtonWasTouchedUpInside() -> String {
+    func getNewWordsList() -> [[Word]] {
         do {
-            //let supportedTargetStates = editorViewController.editor.getSupportedTargetConversionState(nil)
             let export = try editorViewController.editor.export_(nil, mimeType: IINKMimeType.JIIX)
             let exportJSON = export.toJSON()
             //print(exportJSON)
-            wordsList = []
+            var newWordsList: [[Word]] = []
             if let jsonObj = exportJSON as? [String: Any] {
                 if let children = jsonObj["children"] as? [[String: Any]] {
-                    let completeLabel = "\(children[0]["label"]!)"
                     if let words = children[0]["words"] as? [[String: Any]] {
-                        var candidateWords = "";
                         var lineOfWords : [Word] = []
                         for var w in words {
                             if let label = w["label"] {
                                 if label as? String != " " {
                                     if label as? String == "\n" {
-                                        wordsList.append(lineOfWords)
+                                        newWordsList.append(lineOfWords)
                                         lineOfWords = []
-                                        candidateWords += "NEWLINE \n"
                                     } else {
-                                        candidateWords += "(label: \(label))    "
                                         if let candidates = w["candidates"] {
                                             let newWord = Word(label: label as! String, candidates: candidates as! [String])
                                             newWord.injectCandidates(startIndex: 0)
                                             lineOfWords.append(newWord)
-                                            let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
-                                            candidateWords += "\(candidatesOnOneLine) \n "
                                             if let boundingBox = w["bounding-box"] as? [String: Any] {
                                                 newWord.x = boundingBox["x"] as! Double
                                                 newWord.y = boundingBox["y"] as! Double
@@ -228,8 +242,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                                             let newWord = Word(label: label as! String, candidates: [])
                                             newWord.injectCandidates(startIndex: 0)
                                             lineOfWords.append(newWord)
-                                            let candidatesOnOneLine = newWord.candidates.joined(separator: " ")
-                                            candidateWords += "no candidate words but has injected candidates: \(candidatesOnOneLine) \n"
                                             if let boundingBox = w["bounding-box"] as? [String: Any] {
                                                 newWord.x = boundingBox["x"] as! Double
                                                 newWord.y = boundingBox["y"] as! Double
@@ -239,34 +251,20 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                                         }
                                     }
                                 }
-                            } else {
-                                candidateWords += "ERROR: no label \n"
                             }
-                            
                         }
                         // Remember to add last line of words to wordlist
-                        wordsList.append(lineOfWords)
-                        let preprocessErrors = preprocessMyScriptRecognition()
-                        var preprocessRecognition = ""
-                        for eachLine in wordsList {
-                            for w in eachLine {
-                                preprocessRecognition += w.label
-                                preprocessRecognition += " "
-                            }
-                            preprocessRecognition += "\n "
-                        }
-                        heuristicsProcessingPostLexer()
-                        let result = getParseTree(completeLabel)
-                        return "MyScript Recognition: \n \(completeLabel) \n PreProcessing Stage: \n \(preprocessRecognition) \n Candidates: \n \(candidateWords) \n PreProcessResult: \(preprocessErrors) \n \(result)"
-                        //outputConvertedCode.text = "Label: \(label) Candidates: \(candidateWords)"
+                        newWordsList.append(lineOfWords)
+                        let _ = preprocessMyScriptRecognition()
+                        heuristicsProcessingPostLexer(newWordsList: newWordsList)
+                        return newWordsList
                     }
                 }
             }
-            // try editorViewController.editor.convert(nil, targetState: supportedTargetStates[0].value)
         } catch {
             print("Error while converting : " + error.localizedDescription)
         }
-        return ""
+        return [[]]
     }
     
     func preprocessBracketsFix() -> String {
@@ -380,9 +378,9 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         return preprocessMessage
     }
     
-    func heuristicsProcessingPostLexer() {
+    func heuristicsProcessingPostLexer(newWordsList: [[Word]]) {
         var codeString = ""
-        for eachLine in wordsList {
+        for eachLine in newWordsList {
             for w in eachLine {
                 codeString += w.label + " "
             }
@@ -393,7 +391,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         let lexer = Java9Lexer(input)
         let allTokens = try! lexer.getAllTokens()
         var indexInCurrentWord = 0
-        var flattenWordsList = wordsList.flatMap {$0}
+        var flattenWordsList = newWordsList.flatMap {$0}
         var wordIndex = 0
         var currentWord = flattenWordsList[wordIndex]
         for i in 0..<allTokens.count {
@@ -450,9 +448,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         if let identifier = segue.identifier {
             switch identifier {
             case "showConversion":
-                let output = convertButtonWasTouchedUpInside()
                 if let covc = segue.destination as? ConvertedOutputViewController {
-                    covc.convertedText = output
+                    covc.convertedText = ""
                 }
             case "settingsSegue":
                 if let settingsController = segue.destination as? SettingsTableViewController {
@@ -504,6 +501,16 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBAction func saveContent(_ sender: UIBarButtonItem) {
         do {
             try contentPackage?.save()
+            // Save wordsList data
+            let jsonData: Data? = try? JSONEncoder().encode(wordsList)
+            let fileManager = FileManager.default
+            let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            do {
+                try? FileManager.default.createDirectory(atPath: documentsURL.appendingPathComponent("WordsListData").path, withIntermediateDirectories: true)
+                try jsonData?.write(to: documentsURL.appendingPathComponent("WordsListData").appendingPathComponent(documentTitleText + ".json"))
+            } catch {
+                print("Error trying to save wordsList file \(error.localizedDescription)")
+            }
         } catch {
             print("Error trying to save")
         }
@@ -518,6 +525,18 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     documentTitleText = String(fileURL[fileURL.index(fileURL.startIndex, offsetBy: 87)...fileURL.index(fileURL.endIndex, offsetBy: -6)])
                     //editorViewController.editor.clear()
                     try editorViewController.editor.part = package.getPartAt(0)
+                    // load saved wordsList
+                    let fileManager = FileManager.default
+                    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                    let wordsListPath = documentsURL.appendingPathComponent("WordsListData").appendingPathComponent(documentTitleText + ".json")
+                    let strPath = String(describing: wordsListPath)
+                    let range = strPath.index(strPath.startIndex, offsetBy:7)
+                    if fileManager.fileExists(atPath: String(strPath[range...].removingPercentEncoding!)) {
+                        let data = try Data(contentsOf: wordsListPath)
+                        if let newWordsList: [[Word]] = try? JSONDecoder().decode([[Word]].self, from: data) {
+                            wordsList = newWordsList
+                        }
+                    }
                 } catch {
                     print("ERROR: loadContent")
                 }
@@ -933,6 +952,25 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         }
     }
     
+    @IBAction func convert2ButtonPressed(_ sender: UIBarButtonItem) {
+        print("convert2ButtonPressed")
+        var newWordsList = getNewWordsList()
+        for (lineIndex, eachLine) in newWordsList.enumerated()  {
+            for (wIndex, newW) in eachLine.enumerated() {
+                for oldW in wordsList.flatMap({$0}) {
+                    if newW.width == oldW.width && newW.height == oldW.height && newW.originalLabel == oldW.originalLabel {
+                        let newWord = newWordsList[lineIndex][wIndex]
+                        newWordsList[lineIndex][wIndex] = oldW
+                        newWordsList[lineIndex][wIndex].x = newWord.x
+                        newWordsList[lineIndex][wIndex].y = newWord.y
+                        break
+                    }
+                }
+            }
+        }
+        wordsList = newWordsList
+    }
+    
     // MARK: GENERATE STROKES PROGRAMATICALLY
     
     @IBAction func generateHandwritingButtonClicked(_ sender: UIBarButtonItem) {
@@ -1041,9 +1079,10 @@ public var injectionList: [Word] = []
 //    Word(label: "D", candidates: ["1)", "))"])
 //]
 
-public class Word {
+public class Word: Codable {
     
     var label: String
+    var originalLabel: String
     var candidates: [String]
     public var x = 0.0
     public var y = 0.0
@@ -1054,6 +1093,7 @@ public class Word {
     
     init(label l: String, candidates c: [String]) {
         label = l
+        originalLabel = l
         candidates = c
     }
     
@@ -1081,7 +1121,7 @@ public class Word {
     }
 }
 
-public enum SPACE_TYPE: String {
+public enum SPACE_TYPE: String, Codable {
     case NO_SPACE = "No Space"
     case ADD_SPACE = "Add Space"
     case DELETE_SPACE = "Delete Space"
@@ -1093,6 +1133,41 @@ public enum FixProvider {
     case ANTLRFix(String)
     case UserFix(String)
     case MachineLayerFix(String)
+}
+
+extension FixProvider: Codable {
+    enum CodingKeys: String, CodingKey {
+        case BracketsMismatchingFix, HeuristicsFix, ANTLRFix, UserFix, MachineLayerFix
+    }
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let stringValue = try container.decodeIfPresent(String.self, forKey: .BracketsMismatchingFix) {
+            self = .BracketsMismatchingFix(stringValue)
+        } else if let stringValue = try container.decodeIfPresent(String.self, forKey: .HeuristicsFix) {
+            self = .HeuristicsFix(stringValue)
+        } else if let stringValue = try container.decodeIfPresent(String.self, forKey: .ANTLRFix) {
+            self = .ANTLRFix(stringValue)
+        } else if let stringValue = try container.decodeIfPresent(String.self, forKey: .UserFix) {
+            self = .UserFix(stringValue)
+        } else {
+            self = .MachineLayerFix(try container.decode(String.self, forKey: .MachineLayerFix))
+        }
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .BracketsMismatchingFix(let value):
+            try container.encode(value, forKey: .BracketsMismatchingFix)
+        case .HeuristicsFix(let value):
+            try container.encode(value, forKey: .HeuristicsFix)
+        case .ANTLRFix(let value):
+            try container.encode(value, forKey: .ANTLRFix)
+        case .UserFix(let value):
+            try container.encode(value, forKey: .UserFix)
+        case .MachineLayerFix(let value):
+            try container.encode(value, forKey: .MachineLayerFix)
+        }
+    }
 }
 
 extension String {

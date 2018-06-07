@@ -38,6 +38,7 @@ class Java9ANTLRSemanticFixesWalker: Java9BaseVisitor<Void> {
         symbolTable.addIdentifier(name: "boolean", identifier: Type())
         symbolTable.addIdentifier(name: "String", identifier: Type())
         symbolTable.addIdentifier(name: "ListNode", identifier: Type())
+        symbolTable.addIdentifier(name: "int[]", identifier: ArrayST(type: symbolTable.lookUpAll(name: "int") as! Type))
     }
     
     open override func visitClassBody(_ ctx: Java9Parser.ClassBodyContext) {
@@ -62,6 +63,32 @@ class Java9ANTLRSemanticFixesWalker: Java9BaseVisitor<Void> {
         visitChildren(ctx)
     }
     
+    open override func visitErrorNode(_ node: ErrorNode) {
+        if (node.getSymbol()?.getLine())! >= startingLineOfCodeBody && (node.getSymbol()?.getLine())! < startingLineOfClosingCode
+            && node.getText() != "<missing \';\'>" {
+            print(node.getText())
+            if node.getText().count >= currentWord.label.count - indexInCurrentWord {
+                // overflows onto next bounding box
+                var indexInToken = 0
+                while node.getText().count - indexInToken >= currentWord.label.count - indexInCurrentWord  {
+                    indexInToken = currentWord.label.count - indexInCurrentWord + indexInToken
+                    // move to next Word object
+                    indexInCurrentWord = 0
+                    wordIndex = wordIndex + 1
+                    if wordIndex < flattenedWordsList.count {
+                        currentWord = flattenedWordsList[wordIndex]
+                    }
+                }
+                // complete partial overflow in current word
+                indexInCurrentWord = indexInCurrentWord + node.getText().count - indexInToken
+            } else {
+                indexInCurrentWord = indexInCurrentWord + node.getText().count
+            }
+        } else {
+            print(node.getText())
+        }
+    }
+    
     open override func visitTerminal(_ node: TerminalNode) {
         if (node.getSymbol()?.getLine())! >= startingLineOfCodeBody && (node.getSymbol()?.getLine())! < startingLineOfClosingCode {
             print(node.getText())
@@ -73,12 +100,38 @@ class Java9ANTLRSemanticFixesWalker: Java9BaseVisitor<Void> {
                     // move to next Word object
                     indexInCurrentWord = 0
                     wordIndex = wordIndex + 1
-                    currentWord = flattenedWordsList[wordIndex]
+                    if wordIndex < flattenedWordsList.count {
+                        currentWord = flattenedWordsList[wordIndex]
+                    }
                 }
                 // complete partial overflow in current word
                 indexInCurrentWord = indexInCurrentWord + node.getText().count - indexInToken
             } else {
                 indexInCurrentWord = indexInCurrentWord + node.getText().count
+            }
+        }
+    }
+    
+    open override func visitExpressionName(_ ctx: Java9Parser.ExpressionNameContext) {
+        if let children = ctx.children {
+            for child in children {
+                if let identifier = child as? TerminalNode, identifier.getSymbol()?.getType() == Java9Parser.Tokens.Identifier.rawValue {
+                    checkAndFixIdentifier(identifier: identifier.getText(), ctx: child as? ParserRuleContext, tNode: identifier, identifierClass: Variable(type: Type()))
+                } else {
+                    visit(child)
+                }
+            }
+        }
+    }
+    
+    open override func visitAmbiguousName(_ ctx: Java9Parser.AmbiguousNameContext) {
+        if let children = ctx.children {
+            for child in children {
+                if let identifier = child as? TerminalNode, identifier.getSymbol()?.getType() == Java9Parser.Tokens.Identifier.rawValue {
+                    checkAndFixIdentifier(identifier: identifier.getText(), ctx: nil, tNode: identifier, identifierClass: Variable(type: Type()))
+                } else {
+                    visit(child)
+                }
             }
         }
     }
@@ -90,36 +143,17 @@ class Java9ANTLRSemanticFixesWalker: Java9BaseVisitor<Void> {
             for vDecOrComma in variablesList {
                 if let v = vDecOrComma as? Java9Parser.VariableDeclaratorContext {
                     let id = v.variableDeclaratorId()?.getText()
-                    symbolTable.addIdentifier(name: id!, identifier: type!)
-                    visit(v.variableDeclaratorId()!)
-                    if let variableInitialiser = v.variableInitializer() {
-                        visitTerminal((v.getChild(1) as? TerminalNode)!) // visit equals
-                        if let expression = variableInitialiser.expression() {
-                            if let assignmentExpression = expression.assignmentExpression() {
-                                if let conditionalExpression = assignmentExpression.conditionalExpression(), let conditionalOrExpression = conditionalExpression.conditionalOrExpression(),
-                                    let conditionalAndExpression = conditionalOrExpression.conditionalAndExpression(),
-                                    let inclusiveOrExpression = conditionalAndExpression.inclusiveOrExpression(), let exclusiveOrExpression = inclusiveOrExpression.exclusiveOrExpression(),
-                                    let andExpression = exclusiveOrExpression.andExpression(), let equalityExpression = andExpression.equalityExpression(),
-                                    let relationalExpression = equalityExpression.relationalExpression(), let shiftExpression = relationalExpression.shiftExpression(),
-                                    let additiveExpression = shiftExpression.additiveExpression(), let multiplicativeExpression = additiveExpression.multiplicativeExpression(),
-                                    let unaryExpression = multiplicativeExpression.unaryExpression(), let unaryExpressionNotPlusMinus = unaryExpression.unaryExpressionNotPlusMinus(),
-                                    let postFixExpression = unaryExpressionNotPlusMinus.postfixExpression(), let expressionName = postFixExpression.expressionName(),
-                                    let identifier = expressionName.Identifier() {
-                                    // note: this will create a missing variable in symbol table if levenshtein does not match.
-                                    checkAndFixIdentifier(identifier: identifier.getText(), ctx: assignmentExpression, identifierClass: Variable(type: type as! Type))
-                                } else {
-                                    visitChildren(assignmentExpression)
-                                }
-                            } else {
-                                visitChildren(expression)
-                            }
-                        }
-                    }
+                    symbolTable.addIdentifier(name: id!, identifier: Variable(type: type as! Type))
+                    visitChildren(v)
                 } else {
                     visitTerminal((vDecOrComma as? TerminalNode)!)
                 }
             }
         }
+    }
+    
+    open override func visitBasicForStatement(_ ctx: Java9Parser.BasicForStatementContext) {
+        visitChildren(ctx)
     }
     
     open override func visitUnannClassType_lfno_unannClassOrInterfaceType(_ ctx: Java9Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext) {
@@ -134,11 +168,12 @@ class Java9ANTLRSemanticFixesWalker: Java9BaseVisitor<Void> {
             if let unannTypeVar = refType.unannTypeVariable() {
                 // New type e.g. NodeList, so we need to see if similar types exist, and replace or add new type
                 let identifier = unannType.getText()
-                return checkAndFixIdentifier(identifier: identifier, ctx: unannTypeVar, identifierClass: Type())
+                return checkAndFixIdentifier(identifier: identifier, ctx: unannTypeVar, tNode: nil, identifierClass: Type())
             } else if let unannClassOrInterfaceType = refType.unannClassOrInterfaceType() {
                 if let unannClassType_lfno = unannClassOrInterfaceType.unannClassType_lfno_unannClassOrInterfaceType() {
-                    let identifier = unannClassType_lfno.Identifier()?.getText()
-                    return checkAndFixIdentifier(identifier: identifier!, ctx: unannClassType_lfno, identifierClass: Type())
+                    // e.g. Map<Integer, Integer>
+                    let typeIdentifierTextIncludingTypeArguments = unannClassType_lfno.getText()
+                    return checkAndFixIdentifier(identifier: typeIdentifierTextIncludingTypeArguments, ctx: unannClassType_lfno, tNode: nil, identifierClass: Type())
                 } else {
                     print("Not handling case unannClassOrInterfaceType")
                 }
@@ -149,15 +184,20 @@ class Java9ANTLRSemanticFixesWalker: Java9BaseVisitor<Void> {
         return unannType.getText()
     }
     
-    func checkAndFixIdentifier(identifier: String, ctx: ParserRuleContext, identifierClass: Identifier)->String {
+    func checkAndFixIdentifier(identifier: String, ctx: ParserRuleContext?, tNode: TerminalNode?, identifierClass: Identifier)->String {
         if let _ = symbolTable.lookUpAll(name: identifier) {
-            visitChildren(ctx)
+            if ctx != nil {
+                visitChildren(ctx!)
+            } else if tNode != nil {
+                visitTerminal(tNode!)
+            }
         } else if let foundCloseIdentifier = symbolTable.lookUpAllWithLevenshteinDistance(name: identifier, identifier: identifierClass) {
             if currentWord.label.count - indexInCurrentWord >= foundCloseIdentifier.count {
                 let startIndex = currentWord.label.index(currentWord.label.startIndex, offsetBy: indexInCurrentWord)
                 let endIndex = currentWord.label.index(currentWord.label.startIndex, offsetBy: indexInCurrentWord + foundCloseIdentifier.count)
                 currentWord.fixProviders.append(.ANTLRFix(currentWord.label))
                 currentWord.label = currentWord.label.replacingCharacters(in: startIndex..<endIndex, with: foundCloseIdentifier)
+                indexInCurrentWord = indexInCurrentWord + foundCloseIdentifier.count
             } else {
                 // overflows onto next bounding box
                 var indexInCloseIdentifierString = 0
@@ -193,9 +233,16 @@ class Java9ANTLRSemanticFixesWalker: Java9BaseVisitor<Void> {
             return foundCloseIdentifier
         } else {
             // lookUpAllWithLevenshteinDistance created new type entry, so can visitChildren normally
-            visitChildren(ctx)
+            if ctx != nil {
+                visitChildren(ctx!)
+            } else if tNode != nil {
+                visitTerminal(tNode!)
+            }
         }
-        return ctx.getText()
+        if ctx != nil {
+            return ctx!.getText()
+        }
+        return ""
     }
     
 }
@@ -246,6 +293,12 @@ public class SymbolTable {
         }
         if bestScore > THRESHOLD_SCORE {
             return bestMatch
+        } else if name.count == 1 {
+            if let variable = identifier as? Variable {
+                if name == "o" {
+                    return "0"
+                }
+            }
         }
         // Add new entry
         dictionary[name] = identifier
@@ -254,15 +307,23 @@ public class SymbolTable {
     
 }
 
-public class Identifier {
+class Identifier {
     
 }
 
-public class Type: Identifier {
+class Type: Identifier {
     
 }
 
-public class Variable: Identifier {
+class ArrayST: Type {
+    var type: Type
+    
+    init(type: Type) {
+        self.type = type
+    }
+}
+
+class Variable: Identifier {
     var type: Type
     
     init(type: Type) {
@@ -290,7 +351,7 @@ extension String {
         var last = [Int](0...secondString.count)
         
         for (i, tLett) in firstString.enumerated() {
-            var cur = [i + 1] + empty
+            var cur: [Int] = [i + 1] + empty
             for (j, sLett) in secondString.enumerated() {
                 cur[j + 1] = tLett == sLett ? last[j] : Swift.min(last[j], last[j + 1], cur[j])+1
             }

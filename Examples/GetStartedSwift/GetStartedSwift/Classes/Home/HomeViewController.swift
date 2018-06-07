@@ -275,7 +275,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                         // Remember to add last line of words to wordlist
                         newWordsList.append(lineOfWords)
                         if symbolPairsSwitch.isOn {
-                            let _ = preprocessBracketsFix()
+                            let preprocessString = preprocessBracketsFix(newWordsList)
+                            print(preprocessString)
                         }
                         if endOfLineHeuristicsSwitch.isOn {
                             let _ = endOfLineHeuristics()
@@ -293,9 +294,9 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         return [[]]
     }
     
-    func preprocessBracketsFix() -> String {
+    func preprocessBracketsFix(_ newWordsList: [[Word]]) -> String {
         var errorsMessage = ""
-        for (index, eachLine) in wordsList.enumerated() {
+        for (index, eachLine) in newWordsList.enumerated() {
             var leftBracketCount = 0
             var rightBracketCount = 0
             var leftSquareBracketCount = 0
@@ -531,8 +532,13 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                         let data = try Data(contentsOf: wordsListPath)
                         if let newWordsList: [[Word]] = try? JSONDecoder().decode([[Word]].self, from: data) {
                             wordsList = newWordsList
+                        } else {
+                            wordsList = []
                         }
+                    } else {
+                        wordsList = []
                     }
+                    syntaxHighlight()
                 } catch {
                     print("ERROR: loadContent")
                 }
@@ -835,7 +841,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             if let parser = try? Java9Parser(tokens) {
                 /* Generate AST, begin parsing at the program rule */
                 if let tree = try? parser.classBodyDeclaration() {
-                    Java9ANTLRSemanticFixesWalker(parser, flattenedWordsList: wordsList.flatMap({$0}), startingLineOfCodeBody: (tokens1.last?.getLine())! + 1, startingLineOfClosingCode: (tokens2.last?.getLine())!).visit(tree)
+                    Java9ANTLRSemanticFixesWalker(parser, flattenedWordsList: wordsList.flatMap({$0}), startingLineOfCodeBody: (tokens1.last?.getLine())! + 1, startingLineOfClosingCode: (tokens1.last?.getLine())! + 1 + (tokens2.last?.getLine())!).visit(tree)
                 }
             }
         }

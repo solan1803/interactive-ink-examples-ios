@@ -295,8 +295,10 @@ public class SymbolTable {
             return bestMatch
         } else if name.count == 1 {
             if let variable = identifier as? Variable {
-                if name == "o" {
+                if name == "o" || name == "O" {
                     return "0"
+                } else if name == "i" || name == "I" || name == "l" {
+                    return "1"
                 }
             }
         }

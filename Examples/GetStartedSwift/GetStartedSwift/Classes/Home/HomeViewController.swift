@@ -279,7 +279,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                             print(preprocessString)
                         }
                         if endOfLineHeuristicsSwitch.isOn {
-                            let _ = endOfLineHeuristics()
+                            let endOfLineProcessingString = endOfLineHeuristics(newWordsList)
+                            print(endOfLineProcessingString)
                         }
                         if postLexerHeuristicsSwitch.isOn {
                             heuristicsProcessingPostLexer(newWordsList: newWordsList)
@@ -366,9 +367,9 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         return errorsMessage
     }
     
-    func endOfLineHeuristics() -> String {
+    func endOfLineHeuristics(_ newWordsList: [[Word]]) -> String {
         var preprocessMessage = "PREPROCESS ERRORS AT LINES: \n"
-        for (index, eachLine) in wordsList.enumerated() {
+        for (index, eachLine) in newWordsList.enumerated() {
             // Each line of code should end with a { or a ; (we are excluding short if-statements)
             // Otherwise line of code should only have one character the closing curly brace }
             // This is forcing the code to be in a certain style!
@@ -446,6 +447,37 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     let i = currentWord.label.index(currentWord.label.startIndex, offsetBy: indexInCurrentWord)
                     currentWord.fixProviders.append(.HeuristicsFix(currentWord.label))
                     currentWord.label = currentWord.label.replacingCharacters(in: i...i, with: "(")
+                }
+            } else if t.getType() == Java9Parser.Tokens.ELSE.rawValue && allTokens[i-1].getType() != Java9Parser.Tokens.RBRACE.rawValue {
+                if indexInCurrentWord == 0 {
+                    let previousWord = flattenWordsList[wordIndex-1]
+                    // change previous character to "}"
+                    let i = previousWord.label.index(previousWord.label.endIndex, offsetBy: -1)
+                    previousWord.fixProviders.append(.HeuristicsFix(previousWord.label))
+                    previousWord.label = previousWord.label.replacingCharacters(in: i...i, with: "}")
+                } else {
+                    // change previous character to "}"
+                    let i = currentWord.label.index(currentWord.label.startIndex, offsetBy: indexInCurrentWord-1)
+                    currentWord.fixProviders.append(.HeuristicsFix(currentWord.label))
+                    currentWord.label = currentWord.label.replacingCharacters(in: i...i, with: "}")
+                }
+                // shift
+                if (t.getText()?.count)! >= currentWord.label.count - indexInCurrentWord {
+                    // overflows onto next bounding box
+                    var indexInToken = 0
+                    while (t.getText()?.count)! - indexInToken >= currentWord.label.count - indexInCurrentWord  {
+                        indexInToken = currentWord.label.count - indexInCurrentWord + indexInToken
+                        // move to next Word object
+                        indexInCurrentWord = 0
+                        wordIndex = wordIndex + 1
+                        if (wordIndex < flattenWordsList.count) {
+                            currentWord = flattenWordsList[wordIndex]
+                        }
+                    }
+                    // complete partial overflow in current word
+                    indexInCurrentWord = indexInCurrentWord + (t.getText()?.count)! - indexInToken
+                } else {
+                    indexInCurrentWord = indexInCurrentWord + (t.getText()?.count)!
                 }
             } else {
                 // shift
@@ -767,7 +799,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 if t.getType() == Java9Parser.Tokens.Identifier.rawValue && t.getText() != "String" {
                     code = code + t.getText()!
                     i = i + 1
-                    while (i < allTokens.count && allTokens[i].getType() == Java9Parser.Tokens.Identifier.rawValue) {
+                    while (i < allTokens.count && (allTokens[i].getType() == Java9Parser.Tokens.Identifier.rawValue || allTokens[i].getType() == Java9Parser.Tokens.UNDER_SCORE.rawValue)) {
                         code = code + allTokens[i].getText()!
                         i = i + 1
                     }
@@ -781,7 +813,26 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                     code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
                     code = code + t.getText()!
                     i = i + 1
+                } else if (t.getType() == Java9Parser.Tokens.BITAND.rawValue && i+1 < allTokens.count && allTokens[i+1].getType() == Java9Parser.Tokens.BITAND.rawValue) ||
+                    (t.getType() == Java9Parser.Tokens.BITOR.rawValue && i+1 < allTokens.count && allTokens[i+1].getType() == Java9Parser.Tokens.BITOR.rawValue) ||
+                    (t.getType() == Java9Parser.Tokens.ASSIGN.rawValue && i+1 < allTokens.count && allTokens[i+1].getType() == Java9Parser.Tokens.ASSIGN.rawValue) ||
+                    ((t.getType() == Java9Parser.Tokens.MUL.rawValue || t.getType() == Java9Parser.Tokens.ADD.rawValue || t.getType() == Java9Parser.Tokens.DIV.rawValue || t.getType() == Java9Parser.Tokens.SUB.rawValue || t.getType() == Java9Parser.Tokens.BANG.rawValue) && i+1 < allTokens.count && allTokens[i+1].getType() == Java9Parser.Tokens.ASSIGN.rawValue) {
+                    code = code + t.getText()! + allTokens[i+1].getText()!
+                    code = code + " "
+                    i = i + 2
+                } else if (t.getType() == Java9Parser.Tokens.ADD.rawValue && i+1 < allTokens.count && allTokens[i+1].getType() == Java9Parser.Tokens.ADD.rawValue) || (t.getType() == Java9Parser.Tokens.SUB.rawValue && i+1 < allTokens.count && allTokens[i+1].getType() == Java9Parser.Tokens.SUB.rawValue) {
+                    if code.last == " " {
+                        code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
+                    }
+                    code = code + t.getText()! + allTokens[i+1].getText()!
+                    code = code + " "
+                    i = i + 2
                 } else if t.getType() == Java9Parser.Tokens.ADD.rawValue {
+                    code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
+                    code = code + t.getText()!
+                    code = code + " "
+                    i = i + 1
+                } else if t.getType() == Java9Parser.Tokens.INC.rawValue {
                     code = String(code[..<code.index(code.endIndex, offsetBy: -1)])
                     code = code + t.getText()!
                     code = code + " "

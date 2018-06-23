@@ -1046,7 +1046,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     @IBAction func generateHandwritingButtonClicked(_ sender: UIBarButtonItem) {
         //generateHandwritingOnSeparateLinesFromCharArray(array: [",", "&"])
-        generateHandwritingFromString(forCode: "ListNode dummyHead = new ListNode(0);\nListNode p = l1, q = l2, curr = dummyHead;\nint carry = 0;\nwhile (p != null || q != null) {\nint x = (p != null) ? p.val : 0;\nint y = (q != null) ? q.val : 0;\nint sum = carry + x + y;\ncarry = sum / 10;\ncurr.next = new ListNode(sum % 10);\ncurr = curr.next;\nif (p != null) {\np = p.next;\n}\nif (q != null) {\nq = q.next;\n}\n}\nif (carry > 0) {\ncurr.next = new ListNode(carry);\n}\nreturn dummyHead.next;")
+        generateHandwritingFromString(forCode: "int copy = x;\nlong reversed = 0;\nwhile (copy != 0) {\nreversed *= 10;\nreversed += copy % 10;\ncopy /= 10;\nif (x < 0 && reversed * -1 < Integer.MIN_VALUE) {\nreturn false;\n}else if (x > 0 && reversed > Integer.MAX_VALUE) {\nreturn false;\n}\n}\nif (x < 0) {\nreversed *= -1;\n}\nreturn (int)reversed == x;")
     }
     
     func generateHandwritingFromString(forCode code: String) {

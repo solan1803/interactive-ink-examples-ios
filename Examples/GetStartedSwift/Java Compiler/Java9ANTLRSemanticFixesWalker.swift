@@ -276,7 +276,7 @@ public class SymbolTable {
     
     func lookUpAllWithLevenshteinDistance(name: String, identifier: Identifier) -> String? {
         var currSt: SymbolTable? = self
-        let THRESHOLD_SCORE: Float = 0.7
+        let THRESHOLD_SCORE: Float = 0.65
         var bestScore: Float = 0.0
         var bestMatch = ""
         while (currSt != nil) {

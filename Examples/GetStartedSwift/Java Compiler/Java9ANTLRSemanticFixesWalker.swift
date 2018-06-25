@@ -282,7 +282,7 @@ public class SymbolTable {
         while (currSt != nil) {
             for k in currSt!.dictionary.keys {
                 if k.count == name.count {
-                    let lScore = name.levenshteinDistanceScoreTo(string: k)
+                    let lScore = name.calculateLevenshteinDistance(k)
                     if bestScore < lScore {
                         bestScore = lScore
                         bestMatch = k
@@ -334,39 +334,26 @@ class Variable: Identifier {
 }
 
 extension String {
-    // https://stackoverflow.com/questions/44102213/levenshtein-distance-in-swift3
-    func levenshteinDistanceScoreTo(string: String, ignoreCase: Bool = true, trimWhiteSpacesAndNewLines: Bool = true) -> Float {
+    func calculateLevenshteinDistance(_ string: String) -> Float {
+        var firstStr = self
+        var secondStr = string
+        firstStr = firstStr.lowercased()
+        firstStr = firstStr.trimmingCharacters(in: .whitespacesAndNewlines)
+        secondStr = secondStr.lowercased()
+        secondStr = secondStr.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        var firstString = self
-        var secondString = string
-        
-        if ignoreCase {
-            firstString = firstString.lowercased()
-            secondString = secondString.lowercased()
-        }
-        if trimWhiteSpacesAndNewLines {
-            firstString = firstString.trimmingCharacters(in: .whitespacesAndNewlines)
-            secondString = secondString.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        
-        let empty = [Int](repeating:0, count: secondString.count)
-        var last = [Int](0...secondString.count)
-        
-        for (i, tLett) in firstString.enumerated() {
-            var cur: [Int] = [i + 1] + empty
-            for (j, sLett) in secondString.enumerated() {
-                cur[j + 1] = tLett == sLett ? last[j] : Swift.min(last[j], last[j + 1], cur[j])+1
+        var lastCounts = [Int](0...secondStr.count)
+        for (i, firstStrCurrLetter) in firstStr.enumerated() {
+            var currCounts: [Int] = [i + 1] + [Int](repeating:0, count: secondStr.count)
+            for (j, secondStrCurrLetter) in secondStr.enumerated() {
+                currCounts[j + 1] = firstStrCurrLetter == secondStrCurrLetter ? lastCounts[j] : Swift.min(lastCounts[j], lastCounts[j + 1], currCounts[j])+1
             }
-            last = cur
+            lastCounts = currCounts
         }
         
-        // maximum string length between the two
-        let lowestScore = max(firstString.count, secondString.count)
-        
-        if let validDistance = last.last {
-            return  1 - (Float(validDistance) / Float(lowestScore))
+        if let levenshteinDistance = lastCounts.last {
+            return  1 - (Float(levenshteinDistance) / Float(max(firstStr.count, secondStr.count)))
         }
-        
         return Float.leastNormalMagnitude
     }
 }

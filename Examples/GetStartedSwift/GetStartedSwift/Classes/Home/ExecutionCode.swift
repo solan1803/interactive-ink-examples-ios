@@ -8,12 +8,55 @@
 
 import Foundation
 
-func executeCodeOnServer(codeBody: String)->String {
+func executeCodeOnServer(codeBody: String, filename: String)->String {
+    
+    let defaults = UserDefaults.standard
+    var outputText = ""
+    
+    // Retrieve Server Settings
+    var serverSettings: Dictionary<String, String> = [:]
+    if let d = defaults.dictionary(forKey: "ServerSettings") {
+        serverSettings = d as! Dictionary<String, String>
+    } else {
+        return "No Server Settings!"
+    }
+    
     // Create code file to be sent to server
-    var codeString = "public class JavaTest { \n"
-    codeString = codeString + codeBody
-    codeString = codeString + "}"
-    print(codeString)
+    var codeString = ""
+    if let d = defaults.dictionary(forKey: "FileSettings") {
+        var allFileSettings = d as! Dictionary<String, Dictionary<String, String>>
+        if let fs = allFileSettings[filename] {
+            if fs["placeholder"] == "false" {
+                codeString = "public class JavaTest { \n"
+                codeString = codeString + codeBody
+                codeString = codeString + "}"
+                print(codeString)
+            } else if fs["placeholder"] == "true" {
+                // copy template code from server
+                // replace placeholder with contents
+                let session = NMSSHSession(host: serverSettings["IP-ADDRESS"], andUsername: serverSettings["Username"])
+                session?.connect()
+                if (session?.isConnected)! {
+                    outputText = outputText + "Session connected \n"
+                    session?.authenticate(byPassword: serverSettings["Password"])
+                    if (session?.isAuthorized)! {
+                        outputText = outputText + "Authentication succeeded \n"
+                        session?.sftp.connect()
+                        if (session?.sftp.isConnected)! {
+                            outputText = outputText + "SFTP connected \n"
+                            let data = session?.sftp.contents(atPath: "JavaTemplate.java")
+                            let template = String(data: data!, encoding: String.Encoding.utf8) as String!
+                            let split = template?.components(separatedBy: "{{CODE}}")
+                            codeString = split![0] + codeBody + split![1]
+                        }
+                        session?.sftp.disconnect()
+                    }
+                }
+            } else {
+                print("NO placeholder setting")
+            }
+        }
+    }
     
     let fileManager = FileManager.default
     let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -25,16 +68,8 @@ func executeCodeOnServer(codeBody: String)->String {
         print("Error trying to write file \(error.localizedDescription)")
     }
     
-    // Retrieve Server Settings
-    let defaults = UserDefaults.standard
-    var serverSettings: Dictionary<String, String> = [:]
-    if let d = defaults.dictionary(forKey: "ServerSettings") {
-        serverSettings = d as! Dictionary<String, String>
-    } else {
-        return "No Server Settings!"
-    }
+    
     // Start SSH session and transfer codefile through SFTP
-    var outputText = ""
     let session = NMSSHSession(host: serverSettings["IP-ADDRESS"], andUsername: serverSettings["Username"])
     session?.connect()
     if (session?.isConnected)! {

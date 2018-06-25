@@ -14,7 +14,7 @@ class SettingsTableViewController: UITableViewController {
     var injectionCandidates: Dictionary<String, [String]> = [:]
     var serverSettings: Dictionary<String, String> = [:]
     var leetcodeDetails: Dictionary<String, String> = [:]
-    var fileSettings: Dictionary<String, String> = ["type":"custom"]
+    var fileSettings: Dictionary<String, String> = ["type":"custom", "placeholder":"false"]
     
     var selectedCell = -1
 
@@ -48,6 +48,9 @@ class SettingsTableViewController: UITableViewController {
             var allFileSettings = d as! Dictionary<String, Dictionary<String, String>>
             if let fs = allFileSettings[filename] {
                 fileSettings = fs
+                if fileSettings["type"] == "custom" && fileSettings["placeholder"] == nil {
+                    fileSettings["placeholder"] = "false"
+                }
             } else {
                 // for all old files, save default file settings with type = custom
                 print("old file, need to create filesettings dictionary for it")
@@ -130,6 +133,14 @@ class SettingsTableViewController: UITableViewController {
                 let id = Int(value!)! - 1
                 cell = tableView.dequeueReusableCell(withIdentifier: "LeetCodeCell", for: indexPath) as! LeetCodeQuestionTableViewCell
                 (cell as! LeetCodeQuestionTableViewCell).initialiseLabels(id: LEETCODE_DATA[id][0], questionTitle: LEETCODE_DATA[id][1], acceptance: LEETCODE_DATA[id][3], difficulty: LEETCODE_DATA[id][4], description: LEETCODE_DATA[id][5])
+            } else if fileSettings["type"] == "custom" && key == "placeholder" {
+                cell = tableView.dequeueReusableCell(withIdentifier: "customCodePlaceholderCell", for: indexPath)
+                cell.textLabel?.text = "Placeholder"
+                if value == "true" {
+                    cell.accessoryType = .checkmark
+                } else if value == "false" {
+                    cell.accessoryType = .none
+                }
             } else {
                 cell.textLabel?.text = key
                 cell.detailTextLabel?.text = value
@@ -145,6 +156,27 @@ class SettingsTableViewController: UITableViewController {
         } else if indexPath.section == 1 {
             selectedCell = indexPath.row
             performSegue(withIdentifier: "serverSettingsPropertySegue", sender: self)
+        } else if indexPath.section == 3 && fileSettings["type"] == "custom"{
+            let cell = tableView.cellForRow(at: indexPath)
+            let defaults = UserDefaults.standard
+            if cell?.reuseIdentifier == "customCodePlaceholderCell" {
+                if let d = defaults.dictionary(forKey: "FileSettings") {
+                    var allFileSettings = d as! Dictionary<String, Dictionary<String, String>>
+                    if cell?.accessoryType == UITableViewCellAccessoryType.none {
+                        fileSettings["placeholder"] = "true"
+                        allFileSettings[filename] = fileSettings
+                        defaults.set(allFileSettings, forKey: "FileSettings")
+                        print(defaults.value(forKey: "FileSettings"))
+                        cell?.accessoryType = UITableViewCellAccessoryType.checkmark
+                    } else if cell?.accessoryType == UITableViewCellAccessoryType.checkmark {
+                        fileSettings["placeholder"] = "false"
+                        allFileSettings[filename] = fileSettings
+                        defaults.set(allFileSettings, forKey: "FileSettings")
+                        print(defaults.value(forKey: "FileSettings"))
+                        cell?.accessoryType = UITableViewCellAccessoryType.none
+                    }
+                }
+            }
         }
     }
 

@@ -744,6 +744,20 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         }
         var code = ""
         if type == "custom" {
+            if antlrSwitch.isOn && highlightSwitch.isOn {
+                antlrProcessing(openingCode: "", body: codeBody, closingCode: "")
+                // redraw bounding boxes since ANTLR fixes will cause colour changes
+                removeBoundingBoxes()
+                addBoundingBoxes()
+                // antlr processing will change the code body
+                codeBody = ""
+                for eachLine in highlightWordViews {
+                    for hwv in eachLine {
+                        codeBody = codeBody + "\(hwv.word.label) "
+                    }
+                    codeBody = codeBody + "\n"
+                }
+            }
             code = codeBody
             code = getFinalCodeString(code)
         } else if type == "leetcode" {
@@ -774,6 +788,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         // You can omit the second parameter to use automatic language detection.
         let highlightedCode = highlightr?.highlight(code, as: "java")
         outputTextField.attributedText = highlightedCode
+        outputTextField.font = UIFont(name: (outputTextField.font?.fontName)!, size: 28)
     }
     
     func getFinalCodeString(_ code: String)->String {
@@ -892,7 +907,11 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             if let parser = try? Java9Parser(tokens) {
                 /* Generate AST, begin parsing at the program rule */
                 if let tree = try? parser.classBodyDeclaration() {
-                    Java9ANTLRSemanticFixesWalker(parser, flattenedWordsList: wordsList.flatMap({$0}), startingLineOfCodeBody: (tokens1.last?.getLine())! + 1, startingLineOfClosingCode: (tokens1.last?.getLine())! + 1 + (tokens2.last?.getLine())!).visit(tree)
+                    if openingCode == "" && closingCode == "" {
+                        Java9ANTLRSemanticFixesWalker(parser, flattenedWordsList: wordsList.flatMap({$0}), startingLineOfCodeBody: 1, startingLineOfClosingCode: 1 + (tokens2.last?.getLine())!).visit(tree)
+                    } else {
+                        Java9ANTLRSemanticFixesWalker(parser, flattenedWordsList: wordsList.flatMap({$0}), startingLineOfCodeBody: (tokens1.last?.getLine())! + 1, startingLineOfClosingCode: (tokens1.last?.getLine())! + 1 + (tokens2.last?.getLine())!).visit(tree)
+                    }
                 }
             }
         }
@@ -1002,7 +1021,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         codeString = getFinalCodeString(codeString)
         // Handover execution to specific functinos
         if type == "custom" {
-            outputTextField.text = executeCodeOnServer(codeBody: codeString)
+            outputTextField.text = executeCodeOnServer(codeBody: codeString, filename: documentTitleText)
         } else if type == "leetcode" {
             executeCodeOnLeetCode(codeBody: codeString, filename: documentTitleText, outputTextField: outputTextField)
         }
@@ -1029,7 +1048,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         for (lineIndex, eachLine) in newWordsList.enumerated()  {
             for (wIndex, newW) in eachLine.enumerated() {
                 for oldW in wordsList.flatMap({$0}) {
-                    if newW.width == oldW.width && newW.height == oldW.height && newW.originalLabel == oldW.originalLabel {
+                    if abs(newW.width-oldW.width) < 0.01 && abs(newW.height-oldW.height) < 0.01 && newW.originalLabel == oldW.originalLabel {
                         let newWord = newWordsList[lineIndex][wIndex]
                         newWordsList[lineIndex][wIndex] = oldW
                         newWordsList[lineIndex][wIndex].x = newWord.x

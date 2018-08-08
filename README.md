@@ -4,8 +4,13 @@ This is my individual project as part of my undergraduate degree at Imperial Col
 
 I have used the MyScript handwriting engine to create an iOS application to help developers prepare for their technical interviews. The app allows users to handwrite source code using the Apple Pencil on an iPad. The handwriting is recognised by the MyScript engine, and then post processed by my pipeline to correct recognition errors. The post processing pipeline is built around ANTLR and uses a number of strategies to navigate the source code. A bunch of usability features have also been included in this project: loading and saving digital ink files along with recognised output, allowing intermittent conversions, manual user fixes, third party integration with LeetCode...
 
-For more information please refer to my slides and report
+For more information please refer to my [slides](https://github.com/solan1803/interactive-ink-examples-ios/blob/ANTLR-Symbol-Table/FinalYearProjectPresentationSlides.pdf) and [report](https://github.com/solan1803/interactive-ink-examples-ios/blob/ANTLR-Symbol-Table/FinalYearProjectReport.pdf)
 
+Below are some screenshots: 
+
+![alt tag](FinalYearProjectFlowChart.png)
+
+![alt tag](UserGuide.png)
 
 ## What is it about?
 

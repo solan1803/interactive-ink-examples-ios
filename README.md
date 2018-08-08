@@ -1,3 +1,12 @@
+## What is this fork about?
+
+This is my individual project as part of my undergraduate degree at Imperial College London.
+
+I have used the MyScript handwriting engine to create an iOS application to help developers prepare for their technical interviews. The app allows users to handwrite source code using the Apple Pencil on an iPad. The handwriting is recognised by the MyScript engine, and then post processed by my pipeline to correct recognition errors. The post processing pipeline is built around ANTLR and uses a number of strategies to navigate the source code. A bunch of usability features have also been included in this project: loading and saving digital ink files along with recognised output, allowing intermittent conversions, manual user fixes, third party integration with LeetCode...
+
+For more information please refer to my slides and report
+
+
 ## What is it about?
 
 Interactive Ink SDK is the best way to integrate handwriting recognition capabilities into your iOS application. Interactive Ink extends digital ink to allow users to more intuitively create, interact with, and share content in digital form. Handwritten text, mathematical equations or even diagrams are interpreted in real-time to be editable via simple gestures, responsive and easy to convert to a neat output.
